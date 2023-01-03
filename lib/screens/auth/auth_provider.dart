@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 
@@ -11,8 +12,35 @@ class TotpItem {
   final AnimationController? controller;
   final Color backgroundColor;
   int leftTime;
+  String currentCode;
 
-  TotpItem({required this.totp, this.controller, required this.backgroundColor, this.leftTime = 30});
+  TotpItem(
+      {required this.totp,
+      this.controller,
+      required this.backgroundColor,
+      this.leftTime = 30,
+      this.currentCode = "------"}) {
+    leftTime = totp.period ?? 30;
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    currentCode = OTP.generateTOTPCodeString(
+      totp.secret!,
+      ts,
+    );
+    setTime();
+  }
+
+  void setTime() {
+    const period = Duration(seconds: 30);
+    Timer.periodic(period, (timer) {
+      final ts = DateTime.now().millisecondsSinceEpoch;
+      print(ts);
+      currentCode = OTP.generateTOTPCodeString(
+        totp.secret!,
+        ts,
+        algorithm: Algorithm.SHA1,
+      );
+    });
+  }
   // final
 }
 

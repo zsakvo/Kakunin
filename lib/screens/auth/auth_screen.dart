@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
@@ -107,7 +108,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                               ),
                               const Spacer(),
                               Text(
-                                totp.secret!,
+                                e.currentCode,
                                 style: const TextStyle(fontSize: 20, fontFamily: "Monaco"),
                               )
                             ],
