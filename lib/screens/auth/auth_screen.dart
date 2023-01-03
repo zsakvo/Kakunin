@@ -22,7 +22,8 @@ class AuthScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin {
+class _AuthScreenState extends ConsumerState<AuthScreen>
+    with TickerProviderStateMixin {
   late AnimationController controller;
 
   @override
@@ -69,9 +70,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
             padding: EdgeInsets.only(top: 4, bottom: 4, left: 90),
             actions: [
               ToolBarIconButton(
-                  label: "手动导入", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
-              ToolBarIconButton(label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
-              ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
+                  label: "手动导入",
+                  icon: MacosIcon(
+                      CupertinoIcons.chevron_left_slash_chevron_right),
+                  showLabel: false),
+              ToolBarIconButton(
+                  label: "文件导入",
+                  icon: MacosIcon(CupertinoIcons.doc_text_viewfinder),
+                  showLabel: false),
+              ToolBarIconButton(
+                  label: "设置",
+                  icon: MacosIcon(CupertinoIcons.settings),
+                  showLabel: false)
             ],
           ),
           children: [
@@ -90,22 +100,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                       height: 8,
                     ),
                     Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 20),
                         decoration: BoxDecoration(
-                            color: MacosTheme.of(context).primaryColor.withOpacity(0.25),
+                            color: MacosTheme.of(context)
+                                .primaryColor
+                                .withOpacity(0.25),
                             borderRadius: BorderRadius.circular(4)),
                         child: Row(
                           children: [
                             Text(
                               "Google:zsakvo",
-                              style: TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                              style:
+                                  TextStyle(fontSize: 16, fontFamily: "Monaco"),
                             ),
                             Spacer(),
                             Text(
                               "123 456",
-                              style: TextStyle(fontSize: 20, fontFamily: "Monaco"),
+                              style:
+                                  TextStyle(fontSize: 20, fontFamily: "Monaco"),
                             )
                           ],
                         ),

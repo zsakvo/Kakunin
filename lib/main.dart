@@ -102,9 +102,18 @@ class HomePage extends StatelessWidget {
             padding: EdgeInsets.only(top: 4, bottom: 4, left: 90),
             actions: [
               ToolBarIconButton(
-                  label: "手动导入", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
-              ToolBarIconButton(label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
-              ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
+                  label: "手动导入",
+                  icon: MacosIcon(
+                      CupertinoIcons.chevron_left_slash_chevron_right),
+                  showLabel: false),
+              ToolBarIconButton(
+                  label: "文件导入",
+                  icon: MacosIcon(CupertinoIcons.doc_text_viewfinder),
+                  showLabel: false),
+              ToolBarIconButton(
+                  label: "设置",
+                  icon: MacosIcon(CupertinoIcons.settings),
+                  showLabel: false)
             ],
           ),
           children: [

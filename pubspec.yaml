@@ -16,6 +16,7 @@ dependencies:
   hooks_riverpod: ^2.1.1
   riverpod_annotation: ^1.0.6
   dynamic_color: ^1.5.4
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:
