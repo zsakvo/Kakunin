@@ -1,18 +1,29 @@
 import 'dart:async';
 
+import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 
 class TotpItem {
   final Totp totp;
+  final AnimationController? controller;
+  final Color backgroundColor;
+  int leftTime;
 
-  TotpItem(this.totp);
+  TotpItem({required this.totp, this.controller, required this.backgroundColor, this.leftTime = 30});
   // final
 }
 
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
-  TotpItemsNotifier() : super([]);
+  TotpItemsNotifier()
+      : super([
+          TotpItem(
+              totp: Totp.fromMap(const {"secret": "23334", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+              // controller: controller,
+              backgroundColor: Colors.blue[100]!)
+        ]);
 }
 
 final totpItemsProvider = StateNotifierProvider<TotpItemsNotifier, List<TotpItem>>((ref) {

@@ -8,7 +8,7 @@ class Totp extends Equatable {
   final String? issuer;
   final String? otpauth;
   final String? sha;
-  final String? digits;
+  final int? digits;
   final int? period;
 
   const Totp({
@@ -27,7 +27,7 @@ class Totp extends Equatable {
         issuer: data['issuer'] as String?,
         otpauth: data['otpauth'] as String?,
         sha: data['sha'] as String?,
-        digits: data['digits'] as String?,
+        digits: data['digits'] as int?,
         period: data['period'] as int?,
       );
 
@@ -59,7 +59,7 @@ class Totp extends Equatable {
     String? issuer,
     String? otpauth,
     String? sha,
-    String? digits,
+    int? digits,
     int? period,
   }) {
     return Totp(

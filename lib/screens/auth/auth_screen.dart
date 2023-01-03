@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:totp/data/entity/totp.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 part 'auth_screen.g.dart';
 
@@ -22,8 +23,7 @@ class AuthScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends ConsumerState<AuthScreen>
-    with TickerProviderStateMixin {
+class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin {
   late AnimationController controller;
 
   @override
@@ -61,7 +61,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
   @override
   Widget build(BuildContext context) {
     final String value = ref.watch(helloWorldProvider);
-    final double leftTimeValue = ref.watch(leftTimeProvider);
+    final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
@@ -70,18 +70,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
             padding: EdgeInsets.only(top: 4, bottom: 4, left: 90),
             actions: [
               ToolBarIconButton(
-                  label: "手动导入",
-                  icon: MacosIcon(
-                      CupertinoIcons.chevron_left_slash_chevron_right),
-                  showLabel: false),
-              ToolBarIconButton(
-                  label: "文件导入",
-                  icon: MacosIcon(CupertinoIcons.doc_text_viewfinder),
-                  showLabel: false),
-              ToolBarIconButton(
-                  label: "设置",
-                  icon: MacosIcon(CupertinoIcons.settings),
-                  showLabel: false)
+                  label: "手动导入", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
+              ToolBarIconButton(label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
+              ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
             ],
           ),
           children: [
@@ -89,44 +80,41 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
               builder: (context, scrollController) {
                 return Column(
                   children: [
-                    Container(
-                      height: 2,
-                      child: LinearProgressIndicator(
-                        minHeight: 2,
-                        value: controller.value,
-                      ),
-                    ),
-                    SizedBox(
+                    // Container(
+                    //   height: 2,
+                    //   child: LinearProgressIndicator(
+                    //     minHeight: 2,
+                    //     value: controller.value,
+                    //   ),
+                    // ),
+                    const SizedBox(
                       height: 8,
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: MacosTheme.of(context)
-                                .primaryColor
-                                .withOpacity(0.25),
-                            borderRadius: BorderRadius.circular(4)),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Google:zsakvo",
-                              style:
-                                  TextStyle(fontSize: 16, fontFamily: "Monaco"),
-                            ),
-                            Spacer(),
-                            Text(
-                              "123 456",
-                              style:
-                                  TextStyle(fontSize: 20, fontFamily: "Monaco"),
-                            )
-                          ],
+                    ...totpItems.map((e) {
+                      final Totp totp = e.totp;
+                      return Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: MacosTheme.of(context).primaryColor.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(4)),
+                          child: Row(
+                            children: [
+                              Text(
+                                "${totp.issuer ?? ""}:${totp.label!}",
+                                style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                              ),
+                              const Spacer(),
+                              Text(
+                                totp.secret!,
+                                style: const TextStyle(fontSize: 20, fontFamily: "Monaco"),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }).toList()
                   ],
                 );
               },
