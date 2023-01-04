@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -79,44 +80,54 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
           children: [
             ContentArea(
               builder: (context, scrollController) {
-                return Column(
-                  children: [
-                    // Container(
-                    //   height: 2,
-                    //   child: LinearProgressIndicator(
-                    //     minHeight: 2,
-                    //     value: controller.value,
-                    //   ),
-                    // ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ...totpItems.map((e) {
-                      final Totp totp = e.totp;
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                          decoration: BoxDecoration(
-                              color: MacosTheme.of(context).primaryColor.withOpacity(0.25),
-                              borderRadius: BorderRadius.circular(4)),
-                          child: Row(
-                            children: [
-                              Text(
-                                "${totp.issuer ?? ""}:${totp.label!}",
-                                style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
-                              ),
-                              const Spacer(),
-                              Text(
-                                e.currentCode,
-                                style: const TextStyle(fontSize: 20, fontFamily: "Monaco"),
-                              )
-                            ],
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        final item = totpItems[index];
+                        final Totp totp = item.totp;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${totp.issuer ?? ""}:${totp.label!}",
+                                      style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      item.currentCode,
+                                      style: const TextStyle(fontSize: 20, fontFamily: "Monaco"),
+                                    )
+                                  ],
+                                ),
+                                const Spacer(),
+                                AnimatedLiquidCircularProgressIndicator(),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList()
-                  ],
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2),
+                          child: Divider(
+                            indent: 16,
+                            endIndent: 16,
+                            color: Colors.black,
+                            thickness: 0.1,
+                          ),
+                        );
+                      },
+                      itemCount: totpItems.length),
                 );
               },
             ),

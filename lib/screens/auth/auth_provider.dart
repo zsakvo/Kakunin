@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
@@ -50,6 +51,14 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
           TotpItem(
               totp: Totp.fromMap(const {"secret": "23334", "label": "zsakvo", "issuer": "Google", "digits": 6}),
               // controller: controller,
+              backgroundColor: Colors.blue[100]!),
+          TotpItem(
+              totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+              // controller: controller,
+              backgroundColor: Colors.blue[100]!),
+          TotpItem(
+              totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+              // controller: controller,
               backgroundColor: Colors.blue[100]!)
         ]);
 }
@@ -81,3 +90,51 @@ class LeftTimeNotifier extends StateNotifier<double> {
 final leftTimeProvider = StateNotifierProvider<LeftTimeNotifier, double>((ref) {
   return LeftTimeNotifier();
 });
+
+////////
+///
+///
+///
+
+class AnimatedLiquidCircularProgressIndicator extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => AnimatedLiquidCircularProgressIndicatorState();
+}
+
+class AnimatedLiquidCircularProgressIndicatorState extends State<AnimatedLiquidCircularProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 30),
+    );
+
+    _animationController.addListener(() => setState(() {}));
+    _animationController.repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: 36.0,
+        height: 36.0,
+        child: LiquidCircularProgressIndicator(
+          value: _animationController.value,
+          backgroundColor: Colors.blue[100],
+          valueColor: const AlwaysStoppedAnimation(Colors.blue),
+        ),
+      ),
+    );
+  }
+}
