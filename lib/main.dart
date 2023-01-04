@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
+import 'package:totp/screens/code/code_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: App()));
@@ -36,7 +37,7 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  int _pageIndex = 0;
+  int _pageIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -55,78 +56,11 @@ class _MainViewState extends State<MainView> {
         ),
       ],
       child: MacosWindow(
-        // sidebar: Sidebar(
-        //   minWidth: 200,
-        //   builder: (context, scrollController) => SidebarItems(
-        //     currentIndex: _pageIndex,
-        //     onChanged: (index) {
-        //       setState(() => _pageIndex = index);
-        //     },
-        //     items: const [
-        //       SidebarItem(
-        //         leading: MacosIcon(CupertinoIcons.arrow_down_right_arrow_up_left),
-        //         label: Text('密钥'),
-        //       ),
-        //       SidebarItem(
-        //         leading: MacosIcon(CupertinoIcons.settings),
-        //         label: Text('设置'),
-        //       ),
-        //       SidebarItem(
-        //         leading: MacosIcon(CupertinoIcons.compass),
-        //         label: Text('关于'),
-        //       ),
-        //     ],
-        //   ),
-        // ),
         child: IndexedStack(
           index: _pageIndex,
-          children: const [
-            AuthScreen(),
-          ],
+          children: const [AuthScreen(), CodeScreen()],
         ),
       ),
-    );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return MacosScaffold(
-          toolBar: const ToolBar(
-            title: Text('身份验证器'),
-            padding: EdgeInsets.only(top: 4, bottom: 4, left: 90),
-            actions: [
-              ToolBarIconButton(
-                  label: "手动导入",
-                  icon: MacosIcon(
-                      CupertinoIcons.chevron_left_slash_chevron_right),
-                  showLabel: false),
-              ToolBarIconButton(
-                  label: "文件导入",
-                  icon: MacosIcon(CupertinoIcons.doc_text_viewfinder),
-                  showLabel: false),
-              ToolBarIconButton(
-                  label: "设置",
-                  icon: MacosIcon(CupertinoIcons.settings),
-                  showLabel: false)
-            ],
-          ),
-          children: [
-            ContentArea(
-              builder: (context, scrollController) {
-                return const Center(
-                  child: Text('身份验证器'),
-                );
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
