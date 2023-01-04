@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:totp/screens/auth/auth_provider.dart';
+import 'package:totp/screens/code/code_provider.dart';
 
 class CodeScreen extends StatefulHookConsumerWidget {
   const CodeScreen({super.key});
@@ -13,6 +16,11 @@ class CodeScreen extends StatefulHookConsumerWidget {
 class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
+    final TotpItem totpItem = ref.watch(codeEditorProvider);
+    final periodTextController = useTextEditingController();
+    final digitsTextController = useTextEditingController();
+    periodTextController.text = totpItem.totp.period.toString();
+    digitsTextController.text = totpItem.totp.digits.toString();
     return MacosScaffold(
       toolBar: ToolBar(
         title: const Text("新增凭证"),
@@ -152,13 +160,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("时间"),
-                        SizedBox(
+                      children: [
+                        const Text("时间"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: periodTextController,
                           placeholder: '时间间隔',
                         ))
                       ],
@@ -168,13 +177,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("位数"),
-                        SizedBox(
+                      children: [
+                        const Text("位数"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: digitsTextController,
                           placeholder: '位数',
                         ))
                       ],
