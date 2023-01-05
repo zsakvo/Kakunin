@@ -17,10 +17,42 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
     final TotpItem totpItem = ref.watch(codeEditorProvider);
+    final uriTextController = useTextEditingController();
+    final issuerTextController = useTextEditingController();
+    final labelTextController = useTextEditingController();
+    final secrectTextController = useTextEditingController();
     final periodTextController = useTextEditingController();
     final digitsTextController = useTextEditingController();
     periodTextController.text = totpItem.totp.period.toString();
     digitsTextController.text = totpItem.totp.digits.toString();
+
+    uriValueListener() {
+      final uriText = uriTextController.text;
+      final uri = Uri.parse(uriText);
+      final scheme = uri.scheme;
+      final path = uri.path.replaceAll("/", "");
+      final querMaps = uri.queryParameters;
+      final secret = querMaps["secret"] ?? "";
+      final issuer = querMaps["issuer"] ?? "";
+      final algorithm = querMaps["algorithm"] ?? "";
+      final digits = querMaps["digits"] ?? "";
+      final period = querMaps["period"] ?? "";
+      issuerTextController.text = issuer;
+      labelTextController.text = path;
+      secrectTextController.text = secret;
+      periodTextController.text = period;
+      digitsTextController.text = digits;
+      totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
+      totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
+    }
+
+    useEffect(() {
+      uriTextController.addListener(uriValueListener);
+      return () {
+        uriTextController.removeListener(uriValueListener);
+      };
+    }, []);
+
     return MacosScaffold(
       toolBar: ToolBar(
         title: const Text("新增凭证"),
@@ -46,13 +78,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("链接"),
-                        SizedBox(
+                      children: [
+                        const Text("链接"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: uriTextController,
                           placeholder: '输入otpauth链接',
                         ))
                       ],
@@ -67,13 +100,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("服务商"),
-                        SizedBox(
+                      children: [
+                        const Text("服务商"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: issuerTextController,
                           placeholder: '设置服务商',
                         ))
                       ],
@@ -83,13 +117,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("名称"),
-                        SizedBox(
+                      children: [
+                        const Text("名称"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: labelTextController,
                           placeholder: '名称',
                         ))
                       ],
@@ -99,13 +134,14 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(
-                      children: const [
-                        Text("密钥"),
-                        SizedBox(
+                      children: [
+                        const Text("密钥"),
+                        const SizedBox(
                           width: 14,
                         ),
                         Flexible(
                             child: MacosTextField(
+                          controller: secrectTextController,
                           placeholder: '密钥',
                         ))
                       ],
@@ -120,39 +156,45 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,
                     child: Row(children: [
-                      const Text("加密类型"),
+                      const Text("类型"),
                       const SizedBox(
                         width: 14,
                       ),
-                      MacosPulldownButton(title: "TOTP", items: [
-                        MacosPulldownMenuItem(
-                          title: const Text('TOTP'),
-                          onTap: () => debugPrint("Saving..."),
-                        ),
-                        MacosPulldownMenuItem(
-                          title: const Text('HOTP'),
-                          onTap: () => debugPrint("Opening Save As dialog..."),
-                        ),
-                      ]),
+                      MacosPopupButton<String>(
+                        value: totpItem.totp.scheme,
+                        onChanged: (String? newValue) {
+                          totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
+                          print(totpItem.totp);
+                        },
+                        items: <String>[
+                          'TOTP',
+                          'HOTP',
+                        ].map<MacosPopupMenuItem<String>>((String value) {
+                          return MacosPopupMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                       const Spacer(),
-                      const Text("哈希函数"),
+                      const Text("算法"),
                       const SizedBox(
                         width: 14,
                       ),
-                      MacosPulldownButton(title: "SHA1", items: [
-                        MacosPulldownMenuItem(
-                          title: const Text('SHA1'),
-                          onTap: () => debugPrint("Saving..."),
-                        ),
-                        MacosPulldownMenuItem(
-                          title: const Text('SHA256'),
-                          onTap: () => debugPrint("Opening Save As dialog..."),
-                        ),
-                        MacosPulldownMenuItem(
-                          title: const Text('SHA512'),
-                          onTap: () => debugPrint("Opening Save As dialog..."),
-                        ),
-                      ]),
+                      MacosPopupButton<String>(
+                        value: totpItem.totp.algorithm,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            totpItem.setTotp(totpItem.totp.copyWith(algorithm: newValue));
+                          });
+                        },
+                        items: <String>['SHA1', 'SHA256', 'SHA512'].map<MacosPopupMenuItem<String>>((String value) {
+                          return MacosPopupMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                       const Spacer(),
                     ]),
                   ),

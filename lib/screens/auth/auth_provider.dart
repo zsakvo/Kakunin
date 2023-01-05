@@ -9,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 
 class TotpItem {
-  final Totp totp;
+  Totp totp;
   final AnimationController? controller;
   final Color backgroundColor;
   int leftTime;
@@ -41,6 +41,10 @@ class TotpItem {
         algorithm: Algorithm.SHA1,
       );
     });
+  }
+
+  void setTotp(Totp t) {
+    totp = t;
   }
   // final
 }

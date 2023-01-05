@@ -7,7 +7,8 @@ class Totp extends Equatable {
   final String? label;
   final String? issuer;
   final String? otpauth;
-  final String? sha;
+  final String? algorithm;
+  final String? scheme;
   final int? digits;
   final int? period;
 
@@ -16,7 +17,8 @@ class Totp extends Equatable {
     this.label,
     this.issuer,
     this.otpauth,
-    this.sha,
+    this.algorithm,
+    this.scheme,
     this.digits,
     this.period,
   });
@@ -26,7 +28,8 @@ class Totp extends Equatable {
         label: data['label'] as String?,
         issuer: data['issuer'] as String?,
         otpauth: data['otpauth'] as String?,
-        sha: data['sha'] as String?,
+        algorithm: data['algorithm'] as String?,
+        scheme: data['scheme'] as String?,
         digits: data['digits'] as int?,
         period: data['period'] as int?,
       );
@@ -36,7 +39,8 @@ class Totp extends Equatable {
         'label': label,
         'issuer': issuer,
         'otpauth': otpauth,
-        'sha': sha,
+        'algorithm': algorithm,
+        'scheme': scheme,
         'digits': digits,
         'period': period,
       };
@@ -58,7 +62,8 @@ class Totp extends Equatable {
     String? label,
     String? issuer,
     String? otpauth,
-    String? sha,
+    String? algorithm,
+    String? scheme,
     int? digits,
     int? period,
   }) {
@@ -67,7 +72,8 @@ class Totp extends Equatable {
       label: label ?? this.label,
       issuer: issuer ?? this.issuer,
       otpauth: otpauth ?? this.otpauth,
-      sha: sha ?? this.sha,
+      algorithm: algorithm ?? this.algorithm,
+      scheme: scheme ?? this.scheme,
       digits: digits ?? this.digits,
       period: period ?? this.period,
     );
@@ -83,7 +89,8 @@ class Totp extends Equatable {
       label,
       issuer,
       otpauth,
-      sha,
+      algorithm,
+      scheme,
       digits,
       period,
     ];
