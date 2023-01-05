@@ -7,7 +7,8 @@ class CodeEditorNotifier extends StateNotifier<TotpItem> {
   // We initialize the list of todos to an empty list
   CodeEditorNotifier()
       : super(TotpItem(
-            totp: Totp.fromMap(const {"secret": "", "digits": 6, "period": 30}), backgroundColor: Colors.blue)) {
+            totp: Totp.fromMap(const {"algorithm": "SHA1", "scheme": "TOTP", "secret": "", "digits": 6, "period": 30}),
+            backgroundColor: Colors.blue)) {
     setTime();
   }
 

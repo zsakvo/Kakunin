@@ -29,12 +29,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     uriValueListener() {
       final uriText = uriTextController.text;
       final uri = Uri.parse(uriText);
-      final scheme = uri.scheme;
+      final scheme = uri.scheme.isNotEmpty ? uri.scheme : "TOTP";
       final path = uri.path.replaceAll("/", "");
       final querMaps = uri.queryParameters;
       final secret = querMaps["secret"] ?? "";
       final issuer = querMaps["issuer"] ?? "";
-      final algorithm = querMaps["algorithm"] ?? "";
+      final algorithm = querMaps["algorithm"] ?? "SHA1";
       final digits = querMaps["digits"] ?? "";
       final period = querMaps["period"] ?? "";
       issuerTextController.text = issuer;
@@ -42,8 +42,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       secrectTextController.text = secret;
       periodTextController.text = period;
       digitsTextController.text = digits;
-      totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
-      totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
+      setState(() {
+        // totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
+        // totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
+      });
     }
 
     useEffect(() {
@@ -163,8 +165,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       MacosPopupButton<String>(
                         value: totpItem.totp.scheme,
                         onChanged: (String? newValue) {
-                          totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
-                          print(totpItem.totp);
+                          setState(() {
+                            totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
+                          });
                         },
                         items: <String>[
                           'TOTP',
