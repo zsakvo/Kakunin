@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:totp/data/entity/totp.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
 
@@ -16,15 +17,15 @@ class CodeScreen extends StatefulHookConsumerWidget {
 class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
-    final TotpItem totpItem = ref.watch(codeEditorProvider);
+    final Totp totp = ref.watch(codeEditorProvider);
     final uriTextController = useTextEditingController();
     final issuerTextController = useTextEditingController();
     final labelTextController = useTextEditingController();
     final secrectTextController = useTextEditingController();
     final periodTextController = useTextEditingController();
     final digitsTextController = useTextEditingController();
-    periodTextController.text = totpItem.totp.period.toString();
-    digitsTextController.text = totpItem.totp.digits.toString();
+    periodTextController.text = totp.period.toString();
+    digitsTextController.text = totp.digits.toString();
 
     uriValueListener() {
       final uriText = uriTextController.text;
@@ -42,10 +43,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       secrectTextController.text = secret;
       periodTextController.text = period;
       digitsTextController.text = digits;
-      setState(() {
-        // totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
-        // totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
-      });
+      // ref.read(codeEditorProvider.notifier).setScheme(scheme);
+      // ref.read(codeEditorProvider.notifier).setAlgorithm(algorithm);
+      // setState(() {
+      //   // totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
+      //   // totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
+      // });
     }
 
     useEffect(() {
@@ -163,11 +166,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: totpItem.totp.scheme,
+                        value: totp.scheme,
                         onChanged: (String? newValue) {
-                          setState(() {
-                            totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
-                          });
+                          ref.read(codeEditorProvider.notifier).setScheme(newValue!);
+                          // setState(() {
+                          //   totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
+                          // });
                         },
                         items: <String>[
                           'TOTP',
@@ -185,11 +189,12 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: totpItem.totp.algorithm,
+                        value: totp.algorithm,
                         onChanged: (String? newValue) {
-                          setState(() {
-                            totpItem.setTotp(totpItem.totp.copyWith(algorithm: newValue));
-                          });
+                          ref.read(codeEditorProvider.notifier).setAlgorithm(newValue!);
+                          // setState(() {
+                          //   totpItem.setTotp(totpItem.totp.copyWith(algorithm: newValue));
+                          // });
                         },
                         items: <String>['SHA1', 'SHA256', 'SHA512'].map<MacosPopupMenuItem<String>>((String value) {
                           return MacosPopupMenuItem<String>(
