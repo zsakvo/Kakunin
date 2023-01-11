@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
@@ -98,14 +99,29 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     return MacosScaffold(
       toolBar: ToolBar(
         title: const Text("新增凭证"),
-        actions: const [
-          ToolBarIconButton(label: "保存", icon: MacosIcon(CupertinoIcons.arrow_down_doc), showLabel: false)
+        actions: [
+          ToolBarIconButton(
+            label: "保存",
+            icon: const MacosIcon(CupertinoIcons.arrow_down_doc),
+            showLabel: false,
+            onPressed: () {
+              // print("click");
+              var box = Hive.box("2fa");
+              Totp t = Totp(
+                  scheme: "otpauth",
+                  label: labelTextController.text,
+                  issuer: issuerTextController.text,
+                  secret: secrectTextController.text,
+                  algorithm: totp.algorithm,
+                  period: int.parse(periodTextController.text),
+                  digits: int.parse(digitsTextController.text));
+              Log.d(t);
+            },
+          )
         ],
         leading: MacosBackButton(
           fillColor: Colors.transparent,
-          onPressed: () {
-            // print("click");
-          },
+          onPressed: () {},
         ),
         padding: const EdgeInsets.only(top: 4, bottom: 4, left: 90),
       ),

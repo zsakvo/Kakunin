@@ -1,12 +1,14 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  await Hive.openBox('2fa');
   runApp(const ProviderScope(child: App()));
 }
 
