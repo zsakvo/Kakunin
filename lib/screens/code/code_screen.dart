@@ -26,6 +26,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     final periodTextController = useTextEditingController();
     final digitsTextController = useTextEditingController();
 
+    // periodTextController.text = totp.period.toString();
+    // digitsTextController.text = totp.digits.toString();
+
     uriValueListener() {
       final uriText = uriTextController.text;
       final uri = Uri.parse(uriText);
@@ -42,9 +45,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       labelTextController.text = path;
       secrectTextController.text = secret;
       periodTextController.text = period;
+      // ref.read(codeEditorProvider.notifier).setPeriod(int.tryParse(period) ?? 30);
+      // ref.read(codeEditorProvider.notifier).setDigits(int.tryParse(digits) ?? 6);
       digitsTextController.text = digits;
-      Log.d(periodTextController.text, period);
-      Log.d(digitsTextController.text, digits);
+
       if (scheme.isNotEmpty) {
         if (!["TOTP", "HOTP"].contains(scheme)) {
           Log.d("当前类型不被支持");
@@ -59,10 +63,35 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       }
     }
 
+    totpItemTextValueListener(String key, String value) {
+      Log.d(value, key);
+      // Uri uri = Uri(scheme: "otpauth", host: totp.scheme, queryParameters: {key: value});
+      // Uri uri = Uri.parse(uriTextController.text);
+      // uri.replace(scheme: totp.scheme).replace(host: totp.scheme);
+      // uri = uri.replace(queryParameters: {...uri.queryParameters, key: value}, scheme: "otpauth", host: totp.scheme);
+      // uriTextController.text = uri.toString();
+    }
+
+    issuerListener() => totpItemTextValueListener("issuer", issuerTextController.text);
+    labelListener() => totpItemTextValueListener("label", labelTextController.text);
+    secrectListener() => totpItemTextValueListener("secrect", secrectTextController.text);
+    periodListener() => totpItemTextValueListener("period", periodTextController.text);
+    digitsListenr() => totpItemTextValueListener("digits", digitsTextController.text);
+
     useEffect(() {
       uriTextController.addListener(uriValueListener);
+      issuerTextController.addListener(issuerListener);
+      labelTextController.addListener(labelListener);
+      secrectTextController.addListener(secrectListener);
+      periodTextController.addListener(periodListener);
+      digitsTextController.addListener(digitsListenr);
       return () {
         uriTextController.removeListener(uriValueListener);
+        issuerTextController.removeListener(issuerListener);
+        labelTextController.removeListener(issuerListener);
+        secrectTextController.removeListener(secrectListener);
+        periodTextController.removeListener(periodListener);
+        digitsTextController.removeListener(digitsListenr);
       };
     }, []);
 

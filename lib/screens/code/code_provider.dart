@@ -11,6 +11,10 @@ class CodeEditorNotifier extends StateNotifier<Totp> {
 
   void setTime() {}
 
+  void setOtpAuth(String s) {
+    state = state.copyWith(otpauth: s);
+  }
+
   void setIssuer(String s) {
     state = state.copyWith(issuer: s);
   }
