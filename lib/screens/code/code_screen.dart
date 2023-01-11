@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
+import 'package:totp/utils/log.dart';
 
 class CodeScreen extends StatefulHookConsumerWidget {
   const CodeScreen({super.key});
@@ -24,18 +25,17 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     final secrectTextController = useTextEditingController();
     final periodTextController = useTextEditingController();
     final digitsTextController = useTextEditingController();
-    periodTextController.text = totp.period.toString();
-    digitsTextController.text = totp.digits.toString();
 
     uriValueListener() {
       final uriText = uriTextController.text;
       final uri = Uri.parse(uriText);
-      final scheme = uri.scheme.isNotEmpty ? uri.scheme : "TOTP";
+      if (uri.scheme != "otpauth") return;
+      final scheme = uri.host.toUpperCase();
       final path = uri.path.replaceAll("/", "");
       final querMaps = uri.queryParameters;
       final secret = querMaps["secret"] ?? "";
       final issuer = querMaps["issuer"] ?? "";
-      final algorithm = querMaps["algorithm"] ?? "SHA1";
+      final algorithm = (querMaps["algorithm"] ?? "SHA1").toUpperCase();
       final digits = querMaps["digits"] ?? "";
       final period = querMaps["period"] ?? "";
       issuerTextController.text = issuer;
@@ -43,12 +43,20 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       secrectTextController.text = secret;
       periodTextController.text = period;
       digitsTextController.text = digits;
-      // ref.read(codeEditorProvider.notifier).setScheme(scheme);
-      // ref.read(codeEditorProvider.notifier).setAlgorithm(algorithm);
-      // setState(() {
-      //   // totpItem.setTotp(totpItem.totp.copyWith(scheme: scheme));
-      //   // totpItem.setTotp(totpItem.totp.copyWith(algorithm: algorithm));
-      // });
+      Log.d(periodTextController.text, period);
+      Log.d(digitsTextController.text, digits);
+      if (scheme.isNotEmpty) {
+        if (!["TOTP", "HOTP"].contains(scheme)) {
+          Log.d("当前类型不被支持");
+        } else {
+          ref.read(codeEditorProvider.notifier).setScheme(scheme);
+        }
+      }
+      if (!["SHA1", "SHA256", "SHA512"].contains(algorithm)) {
+        Log.d("当前算法不被支持");
+      } else {
+        ref.read(codeEditorProvider.notifier).setAlgorithm(algorithm);
+      }
     }
 
     useEffect(() {

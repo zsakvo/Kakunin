@@ -34,7 +34,7 @@ class TotpItem {
     const period = Duration(seconds: 30);
     Timer.periodic(period, (timer) {
       final ts = DateTime.now().millisecondsSinceEpoch;
-      print(ts);
+      // print(ts);
       currentCode = OTP.generateTOTPCodeString(
         totp.secret!,
         ts,
