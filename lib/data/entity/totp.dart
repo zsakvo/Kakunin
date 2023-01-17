@@ -1,15 +1,27 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
+part 'totp.g.dart';
+
+@HiveType(typeId: 1)
 class Totp extends Equatable {
+  @HiveField(0)
   final String? secret;
+  @HiveField(1)
   final String? label;
+  @HiveField(2)
   final String? issuer;
+  @HiveField(3)
   final String? otpauth;
+  @HiveField(4)
   final String? algorithm;
+  @HiveField(5)
   final String? scheme;
+  @HiveField(6)
   final int? digits;
+  @HiveField(7)
   final int? period;
 
   const Totp({

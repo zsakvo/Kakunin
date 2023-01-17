@@ -33,6 +33,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.1
+  hive_generator:
   build_runner:
   riverpod_generator: ^1.0.6
 

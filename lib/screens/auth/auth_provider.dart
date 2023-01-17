@@ -14,12 +14,14 @@ class TotpItem {
   final Color backgroundColor;
   int leftTime;
   String currentCode;
+  double timeValue;
 
   TotpItem(
       {required this.totp,
       this.controller,
       required this.backgroundColor,
       this.leftTime = 30,
+      this.timeValue = 100.0,
       this.currentCode = "------"}) {
     leftTime = totp.period ?? 30;
     final ts = DateTime.now().millisecondsSinceEpoch;
@@ -28,6 +30,7 @@ class TotpItem {
       ts,
     );
     setTime();
+    setTimeValue();
   }
 
   void setTime() {
@@ -40,6 +43,20 @@ class TotpItem {
         ts,
         algorithm: Algorithm.SHA1,
       );
+    });
+  }
+
+  void setTimeValue() {
+    const period = Duration(seconds: 1);
+    Timer.periodic(period, (timer) {
+      double num = 100 / 30;
+      if (timeValue - num > 0) {
+        timeValue -= num;
+      } else {
+        timeValue = 100 - (num - timeValue);
+      }
+      // final ts = DateTime.now().millisecondsSinceEpoch;
+      // timeValue -= 100 / 30;
     });
   }
 

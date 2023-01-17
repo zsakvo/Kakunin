@@ -110,7 +110,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                   ],
                                 ),
                                 const Spacer(),
-                                AnimatedLiquidCircularProgressIndicator(),
+                                // AnimatedLiquidCircularProgressIndicator(),
+                                ProgressCircle(
+                                  value: item.timeValue,
+                                  innerColor: Colors.blue,
+                                  borderColor: Colors.blue[100],
+                                ),
                               ],
                             ),
                           ),

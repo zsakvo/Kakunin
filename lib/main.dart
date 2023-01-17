@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:totp/data/entity/totp.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
 
 void main() async {
   await Hive.initFlutter();
+  Hive.registerAdapter(TotpAdapter());
   await Hive.openBox('2fa');
   runApp(const ProviderScope(child: App()));
 }
@@ -39,7 +41,7 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  int _pageIndex = 1;
+  int _pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {

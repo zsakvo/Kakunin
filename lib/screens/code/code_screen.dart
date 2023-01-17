@@ -65,7 +65,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     }
 
     totpItemTextValueListener(String key, String value) {
-      Log.d(value, key);
+      // Log.d(value, key);
       // Uri uri = Uri(scheme: "otpauth", host: totp.scheme, queryParameters: {key: value});
       // Uri uri = Uri.parse(uriTextController.text);
       // uri.replace(scheme: totp.scheme).replace(host: totp.scheme);
@@ -115,7 +115,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   algorithm: totp.algorithm,
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text));
-              Log.d(t);
+              box.put(labelTextController.text, t);
             },
           )
         ],
