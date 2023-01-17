@@ -30,7 +30,7 @@ class TotpItem {
       totp.secret!,
       ts,
     );
-    setTime();
+    // setTime();
     setTimeValue();
   }
 
@@ -48,12 +48,19 @@ class TotpItem {
   }
 
   void setTimeValue() {
+    timeValue = OTP.remainingSeconds(interval: 30) * 1.00;
     const period = Duration(milliseconds: 30);
     Timer.periodic(period, (timer) {
       double num = 100 / (1000);
       if (timeValue - num > 0) {
         timeValue -= num;
       } else {
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        currentCode = OTP.generateTOTPCodeString(
+          totp.secret!,
+          ts,
+          algorithm: Algorithm.SHA1,
+        );
         timeValue = 100 - (num - timeValue);
       }
       // final ts = DateTime.now().millisecondsSinceEpoch;
