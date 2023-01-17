@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:otp/otp.dart';
@@ -47,9 +48,9 @@ class TotpItem {
   }
 
   void setTimeValue() {
-    const period = Duration(seconds: 1);
+    const period = Duration(milliseconds: 30);
     Timer.periodic(period, (timer) {
-      double num = 100 / 30;
+      double num = 100 / (1000);
       if (timeValue - num > 0) {
         timeValue -= num;
       } else {
@@ -69,19 +70,22 @@ class TotpItem {
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
   TotpItemsNotifier()
       : super([
-          TotpItem(
-              totp: Totp.fromMap(const {"secret": "23334", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-              // controller: controller,
-              backgroundColor: Colors.blue[100]!),
-          TotpItem(
-              totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-              // controller: controller,
-              backgroundColor: Colors.blue[100]!),
-          TotpItem(
-              totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-              // controller: controller,
-              backgroundColor: Colors.blue[100]!)
-        ]);
+          // TotpItem(
+          //     totp: Totp.fromMap(const {"secret": "23334", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+          //     // controller: controller,
+          //     backgroundColor: Colors.blue[100]!),
+          // TotpItem(
+          //     totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+          //     // controller: controller,
+          //     backgroundColor: Colors.blue[100]!),
+          // TotpItem(
+          //     totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
+          //     // controller: controller,
+          //     backgroundColor: Colors.blue[100]!)
+        ]) {
+    Box<Totp> box = Hive.box("2fa");
+    state = [...box.values.toList().map((e) => TotpItem(totp: e, backgroundColor: Colors.blue)).toList()];
+  }
 }
 
 final totpItemsProvider = StateNotifierProvider<TotpItemsNotifier, List<TotpItem>>((ref) {
@@ -95,7 +99,7 @@ class LeftTimeNotifier extends StateNotifier<double> {
   }
 
   void setTime() {
-    const period = Duration(seconds: 1);
+    const period = Duration(microseconds: 10);
     Timer.periodic(period, (timer) {
       if (state > (1 / 30)) {
         state -= 1 / 30;

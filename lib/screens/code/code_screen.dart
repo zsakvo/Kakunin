@@ -106,7 +106,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
             showLabel: false,
             onPressed: () {
               // print("click");
-              var box = Hive.box("2fa");
+              var box = Hive.box<Totp>("2fa");
               Totp t = Totp(
                   scheme: "otpauth",
                   label: labelTextController.text,
