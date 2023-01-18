@@ -24,18 +24,18 @@ class Totp extends Equatable {
   @HiveField(7)
   final int? period;
   @HiveField(8)
-  final String uuid;
+  final String? uuid;
 
   const Totp(
-      {required this.secret,
-      required this.label,
+      {this.secret,
+      this.label,
       this.issuer,
       this.otpauth,
       this.algorithm,
       this.scheme,
       this.digits,
       this.period,
-      required this.uuid});
+      this.uuid});
 
   factory Totp.fromMap(Map<String, dynamic> data) => Totp(
       secret: data['secret'] as String?,
@@ -46,7 +46,7 @@ class Totp extends Equatable {
       scheme: data['scheme'] as String?,
       digits: data['digits'] as int?,
       period: data['period'] as int?,
-      uuid: data['uuid'] as String);
+      uuid: data['uuid'] as String?);
 
   Map<String, dynamic> toMap() => {
         'secret': secret,

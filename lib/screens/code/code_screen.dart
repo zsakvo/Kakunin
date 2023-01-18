@@ -48,7 +48,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       secrectTextController.text = editItem.secret ?? "";
       periodTextController.text = editItem.period.toString();
       digitsTextController.text = editItem.digits.toString();
-      uuidVal = editItem.uuid;
+      uuidVal = editItem.uuid!;
     } else {
       uuidVal = uuid.v4();
     }
