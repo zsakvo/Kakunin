@@ -11,7 +11,8 @@ import 'package:totp/screens/code/code_screen.dart';
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TotpAdapter());
-  await Hive.openBox<Totp>('2fa');
+  var b = await Hive.openBox<Totp>('2fa');
+  // await b.clear();
   runApp(const ProviderScope(child: App()));
 }
 

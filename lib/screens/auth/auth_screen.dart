@@ -8,7 +8,7 @@ import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/utils/flash.dart';
-import 'package:totp/utils/log.dart';
+
 part 'auth_screen.g.dart';
 
 @riverpod
@@ -64,7 +64,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   @override
   Widget build(BuildContext context) {
     final bool isEditing = ref.watch(editorProvider);
-    final editItem = ref.watch(editItemProvider);
+    final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     return ContentArea(
       builder: (context, scrollController) {
@@ -93,7 +93,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                     const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
                   ]
                 : [
-                    const ToolBarIconButton(label: "删除", icon: MacosIcon(CupertinoIcons.ellipsis), showLabel: false),
+                    ToolBarIconButton(
+                        label: "编辑",
+                        icon: const MacosIcon(CupertinoIcons.ellipsis),
+                        showLabel: false,
+                        onPressed: () {
+                          ref.read(pageProvider.notifier).update((state) => 1);
+                        }),
                     const ToolBarIconButton(
                         label: "删除",
                         icon: MacosIcon(

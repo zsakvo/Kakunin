@@ -163,6 +163,6 @@ class AnimatedLiquidCircularProgressIndicatorState extends State<AnimatedLiquidC
 
 final editorProvider = StateProvider<bool>(((ref) => false));
 
-final editItemProvider = StateProvider<dynamic>(
+final editItemProvider = StateProvider<Totp?>(
   (ref) => null,
 );

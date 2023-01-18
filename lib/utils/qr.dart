@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
-
 import 'package:flutter/widgets.dart';
 import 'package:qr_code_vision/qr_code_vision.dart';
 import 'dart:ui' as ui;

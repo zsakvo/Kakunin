@@ -25,13 +25,14 @@ class TotpAdapter extends TypeAdapter<Totp> {
       scheme: fields[5] as String?,
       digits: fields[6] as int?,
       period: fields[7] as int?,
+      uuid: (fields[8] ?? "110ec58a-a0f2-4ac4-8393-c866d813b8d1") as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Totp obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.secret)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class TotpAdapter extends TypeAdapter<Totp> {
       ..writeByte(6)
       ..write(obj.digits)
       ..writeByte(7)
-      ..write(obj.period);
+      ..write(obj.period)
+      ..writeByte(8)
+      ..write(obj.uuid);
   }
 
   @override
@@ -55,8 +58,5 @@ class TotpAdapter extends TypeAdapter<Totp> {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TotpAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+      identical(this, other) || other is TotpAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
 }

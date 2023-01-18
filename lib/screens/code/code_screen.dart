@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-import 'dart:ui' as ui;
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,6 +17,7 @@ import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
 import 'package:totp/utils/log.dart';
 import 'package:totp/utils/qr.dart';
+import 'package:uuid/uuid.dart';
 
 class CodeScreen extends StatefulHookConsumerWidget {
   const CodeScreen({super.key});
@@ -29,14 +29,29 @@ class CodeScreen extends StatefulHookConsumerWidget {
 class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
+    var uuid = const Uuid();
+    late String uuidVal;
     final Totp totp = ref.watch(codeEditorProvider);
+    final Totp? editItem = ref.watch(editItemProvider);
     final isDragging = ref.watch(dragProvider);
     final uriTextController = useTextEditingController();
     final issuerTextController = useTextEditingController();
     final labelTextController = useTextEditingController();
     final secrectTextController = useTextEditingController();
-    final periodTextController = useTextEditingController();
-    final digitsTextController = useTextEditingController();
+    final periodTextController = useTextEditingController(text: "30");
+    final digitsTextController = useTextEditingController(text: "6");
+
+    if (editItem != null) {
+      uriTextController.text = editItem.otpauth ?? "";
+      issuerTextController.text = editItem.issuer ?? "";
+      labelTextController.text = editItem.label ?? "";
+      secrectTextController.text = editItem.secret ?? "";
+      periodTextController.text = editItem.period.toString();
+      digitsTextController.text = editItem.digits.toString();
+      uuidVal = editItem.uuid;
+    } else {
+      uuidVal = uuid.v4();
+    }
 
     // periodTextController.text = totp.period.toString();
     // digitsTextController.text = totp.digits.toString();
@@ -125,7 +140,8 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   secret: secrectTextController.text,
                   algorithm: totp.algorithm,
                   period: int.parse(periodTextController.text),
-                  digits: int.parse(digitsTextController.text));
+                  digits: int.parse(digitsTextController.text),
+                  uuid: uuidVal);
               box.put("${issuerTextController.text}-${labelTextController.text}", t);
               ref.read(totpItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
