@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
+import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 part 'auth_screen.g.dart';
 
@@ -67,14 +68,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
-          toolBar: const ToolBar(
-            title: Text("身份验证器"),
-            padding: EdgeInsets.only(top: 4, bottom: 4, left: 90),
+          toolBar: ToolBar(
+            title: const Text("身份验证器"),
+            padding: const EdgeInsets.only(top: 4, bottom: 4, left: 90),
             actions: [
               ToolBarIconButton(
-                  label: "手动导入", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
-              ToolBarIconButton(label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
-              ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
+                  label: "手动导入",
+                  icon: const MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right),
+                  showLabel: false,
+                  onPressed: () {
+                    ref.read(pageProvider.notifier).update((state) => 1);
+                  }),
+              const ToolBarIconButton(
+                  label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
+              const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
             ],
           ),
           children: [

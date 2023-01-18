@@ -75,21 +75,11 @@ class TotpItem {
 }
 
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
-  TotpItemsNotifier()
-      : super([
-          // TotpItem(
-          //     totp: Totp.fromMap(const {"secret": "23334", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-          //     // controller: controller,
-          //     backgroundColor: Colors.blue[100]!),
-          // TotpItem(
-          //     totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-          //     // controller: controller,
-          //     backgroundColor: Colors.blue[100]!),
-          // TotpItem(
-          //     totp: Totp.fromMap(const {"secret": "23333", "label": "zsakvo", "issuer": "Google", "digits": 6}),
-          //     // controller: controller,
-          //     backgroundColor: Colors.blue[100]!)
-        ]) {
+  TotpItemsNotifier() : super([]) {
+    update();
+  }
+
+  update() {
     Box<Totp> box = Hive.box("2fa");
     state = [...box.values.toList().map((e) => TotpItem(totp: e, backgroundColor: Colors.blue)).toList()];
   }

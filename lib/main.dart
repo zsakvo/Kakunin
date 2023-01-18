@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
+import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
 
@@ -33,18 +34,17 @@ class App extends StatelessWidget {
   }
 }
 
-class MainView extends StatefulWidget {
+class MainView extends ConsumerStatefulWidget {
   const MainView({super.key});
 
   @override
-  State<MainView> createState() => _MainViewState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MainViewState();
 }
 
-class _MainViewState extends State<MainView> {
-  int _pageIndex = 0;
-
+class _MainViewState extends ConsumerState<MainView> {
   @override
   Widget build(BuildContext context) {
+    final pageIndex = ref.watch(pageProvider);
     return PlatformMenuBar(
       menus: const [
         PlatformMenu(
@@ -61,10 +61,47 @@ class _MainViewState extends State<MainView> {
       ],
       child: MacosWindow(
         child: IndexedStack(
-          index: _pageIndex,
+          index: pageIndex,
           children: const [AuthScreen(), CodeScreen()],
         ),
       ),
     );
   }
 }
+
+
+// class MainView extends StatefulWidget {
+//   const MainView({super.key});
+
+//   @override
+//   State<MainView> createState() => _MainViewState();
+// }
+
+// class _MainViewState extends State<MainView> {
+//   // int _pageIndex = 0;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return PlatformMenuBar(
+//       menus: const [
+//         PlatformMenu(
+//           label: 'Totp',
+//           menus: [
+//             PlatformProvidedMenuItem(
+//               type: PlatformProvidedMenuItemType.about,
+//             ),
+//             PlatformProvidedMenuItem(
+//               type: PlatformProvidedMenuItemType.quit,
+//             ),
+//           ],
+//         ),
+//       ],
+//       child: MacosWindow(
+//         child: IndexedStack(
+//           index: _pageIndex,
+//           children: const [AuthScreen(), CodeScreen()],
+//         ),
+//       ),
+//     );
+//   }
+// }

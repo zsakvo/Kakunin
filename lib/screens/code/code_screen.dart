@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
+import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
 import 'package:totp/utils/log.dart';
@@ -116,12 +117,16 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text));
               box.put(labelTextController.text, t);
+              ref.read(totpItemsProvider.notifier).update();
+              ref.read(pageProvider.notifier).update((state) => 0);
             },
           )
         ],
         leading: MacosBackButton(
           fillColor: Colors.transparent,
-          onPressed: () {},
+          onPressed: () {
+            ref.read(pageProvider.notifier).update((state) => 0);
+          },
         ),
         padding: const EdgeInsets.only(top: 4, bottom: 4, left: 90),
       ),
