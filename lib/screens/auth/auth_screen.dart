@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:otp/otp.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
@@ -31,7 +29,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = AnimationController(
       value: 1.0,
@@ -63,7 +60,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final String value = ref.watch(helloWorldProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     return ContentArea(
       builder: (context, scrollController) {
@@ -88,7 +84,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
             ContentArea(
               builder: (context, scrollController) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListView.separated(
                       itemBuilder: (context, index) {
                         final item = totpItems[index];

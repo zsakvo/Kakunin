@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:otp/otp.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 
 class TotpItem {
@@ -119,6 +117,8 @@ final leftTimeProvider = StateNotifierProvider<LeftTimeNotifier, double>((ref) {
 ///
 
 class AnimatedLiquidCircularProgressIndicator extends StatefulWidget {
+  const AnimatedLiquidCircularProgressIndicator({super.key});
+
   @override
   State<StatefulWidget> createState() => AnimatedLiquidCircularProgressIndicatorState();
 }

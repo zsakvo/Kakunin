@@ -1,14 +1,27 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+import 'dart:ui' as ui;
+
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:mime/mime.dart';
+import 'package:qr_code_vision/qr_code_vision.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
+import 'package:totp/utils/flash.dart';
 import 'package:totp/utils/log.dart';
+
+import 'package:flash/flash.dart';
+import 'package:totp/utils/qr.dart';
 
 class CodeScreen extends StatefulHookConsumerWidget {
   const CodeScreen({super.key});
@@ -21,6 +34,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
     final Totp totp = ref.watch(codeEditorProvider);
+    final isDragging = ref.watch(dragProvider);
     final uriTextController = useTextEditingController();
     final issuerTextController = useTextEditingController();
     final labelTextController = useTextEditingController();
@@ -298,6 +312,63 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       ],
                     ),
                   ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    height: 16,
+                    color: Colors.grey[100],
+                  ),
+                  Flexible(
+                      child: DropTarget(
+                          onDragDone: (detail) async {
+                            for (var element in detail.files) {
+                              final mimeType = lookupMimeType(element.path);
+                              Log.d(lookupMimeType(element.path), "file");
+                              if (mimeType != null && mimeType.contains("image")) {
+                                String? text = await QrUtil.decodeText(element, context);
+                                if (text != null) uriTextController.text = text;
+                              }
+                            }
+                          },
+                          onDragEntered: (detail) {
+                            ref.read(dragProvider.notifier).update((state) => true);
+                          },
+                          onDragExited: (detail) {
+                            ref.read(dragProvider.notifier).update((state) => false);
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                child: SizedBox(
+                                  height: 160,
+                                  width: 160,
+                                  child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                          Color(isDragging ? 0xff2196f3 : 0xffbdbdbd), BlendMode.srcATop),
+                                      child: Image.asset("assets/img/scan_qr.png")),
+                                ),
+                                onTap: () async {
+                                  FilePickerResult? result = await FilePicker.platform.pickFiles();
+                                  Log.d(result, "xxx");
+                                  if (result != null) {
+                                    File file = File(result.files.single.path!);
+                                    String? text = await QrUtil.decodeText(file, context);
+                                    if (text != null) uriTextController.text = text;
+                                  } else {
+                                    // User canceled the picker
+                                    showErrorToast(context, "文件未被选择");
+                                  }
+                                },
+                              ),
+                              Text("拖拽 / 点击 / 粘贴 以导入文件",
+                                  style: TextStyle(
+                                    color: Color(isDragging ? 0xff2196f3 : 0xffbdbdbd),
+                                  )),
+                              const SizedBox(
+                                height: 72,
+                              ),
+                            ],
+                          )))
                 ],
               ),
             );
