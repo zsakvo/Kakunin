@@ -130,7 +130,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   algorithm: totp.algorithm,
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text));
-              box.put(labelTextController.text, t);
+              box.put("${issuerTextController.text}-${labelTextController.text}", t);
               ref.read(totpItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
             },
@@ -356,14 +356,19 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                                     if (text != null) uriTextController.text = text;
                                   } else {
                                     // User canceled the picker
-                                    showErrorToast(context, "文件未被选择");
+                                    // showErrorToast(context, "文件未被选择");
                                   }
                                 },
                               ),
-                              Text("拖拽 / 点击 / 粘贴 以导入文件",
-                                  style: TextStyle(
-                                    color: Color(isDragging ? 0xff2196f3 : 0xffbdbdbd),
-                                  )),
+                              Semantics(
+                                onPaste: () {
+                                  Log.d("onPaste");
+                                },
+                                child: Text("拖拽或点击以选择文件导入",
+                                    style: TextStyle(
+                                      color: Color(isDragging ? 0xff2196f3 : 0xffbdbdbd),
+                                    )),
+                              ),
                               const SizedBox(
                                 height: 72,
                               ),

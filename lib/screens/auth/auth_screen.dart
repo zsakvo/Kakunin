@@ -75,8 +75,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                   onPressed: () {
                     ref.read(pageProvider.notifier).update((state) => 1);
                   }),
-              const ToolBarIconButton(
-                  label: "文件导入", icon: MacosIcon(CupertinoIcons.doc_text_viewfinder), showLabel: false),
+              const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.bandage), showLabel: false),
               const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
             ],
           ),
@@ -99,16 +98,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      "${totp.issuer ?? ""}:${totp.label!}",
-                                      style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          totp.issuer ?? "",
+                                          style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                        ),
+                                        Text(
+                                          " (${totp.label!})",
+                                          style: const TextStyle(
+                                              fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                        )
+                                      ],
                                     ),
                                     const SizedBox(
                                       height: 8,
                                     ),
                                     Text(
                                       item.currentCode,
-                                      style: const TextStyle(fontSize: 20, fontFamily: "Monaco"),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: "Monaco",
+                                          color: Theme.of(context).colorScheme.primary),
                                     )
                                   ],
                                 ),
@@ -117,7 +128,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                 ProgressCircle(
                                   value: item.timeValue,
                                   innerColor: Colors.blue,
-                                  borderColor: Colors.blue[100],
+                                  radius: 11,
                                 ),
                               ],
                             ),
