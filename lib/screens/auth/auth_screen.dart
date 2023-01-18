@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +7,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
+import 'package:totp/utils/flash.dart';
+import 'package:totp/utils/log.dart';
 part 'auth_screen.g.dart';
 
 @riverpod
@@ -60,24 +63,45 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final bool isEditing = ref.watch(editorProvider);
+    final editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
           toolBar: ToolBar(
             title: const Text("身份验证器"),
+            leading: isEditing
+                ? MacosBackButton(
+                    fillColor: Colors.transparent,
+                    onPressed: () {
+                      ref.read(editorProvider.notifier).update((state) => false);
+                    },
+                  )
+                : null,
             padding: const EdgeInsets.only(top: 4, bottom: 4, left: 90),
-            actions: [
-              ToolBarIconButton(
-                  label: "手动导入",
-                  icon: const MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right),
-                  showLabel: false,
-                  onPressed: () {
-                    ref.read(pageProvider.notifier).update((state) => 1);
-                  }),
-              const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.bandage), showLabel: false),
-              const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
-            ],
+            actions: !isEditing
+                ? [
+                    ToolBarIconButton(
+                        label: "手动导入",
+                        icon: const MacosIcon(CupertinoIcons.bandage),
+                        showLabel: false,
+                        onPressed: () {
+                          ref.read(pageProvider.notifier).update((state) => 1);
+                        }),
+                    // const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
+                    const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
+                  ]
+                : [
+                    const ToolBarIconButton(label: "删除", icon: MacosIcon(CupertinoIcons.ellipsis), showLabel: false),
+                    const ToolBarIconButton(
+                        label: "删除",
+                        icon: MacosIcon(
+                          CupertinoIcons.trash,
+                          color: Color(0xffef5350),
+                        ),
+                        showLabel: false)
+                  ],
           ),
           children: [
             ContentArea(
@@ -88,51 +112,67 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                       itemBuilder: (context, index) {
                         final item = totpItems[index];
                         final Totp totp = item.totp;
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          totp.issuer ?? "",
-                                          style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
-                                        ),
-                                        Text(
-                                          " (${totp.label!})",
-                                          style: const TextStyle(
-                                              fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Text(
-                                      item.currentCode,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: "Monaco",
-                                          color: Theme.of(context).colorScheme.primary),
-                                    )
-                                  ],
-                                ),
-                                const Spacer(),
-                                // AnimatedLiquidCircularProgressIndicator(),
-                                ProgressCircle(
-                                  value: item.timeValue,
-                                  innerColor: Colors.blue,
-                                  radius: 11,
-                                ),
-                              ],
+                        return GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          child: Container(
+                            color: isEditing && editItem == totp ? Colors.blue[50] : Colors.transparent,
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            totp.issuer ?? "",
+                                            style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                          ),
+                                          Text(
+                                            " (${totp.label!})",
+                                            style: const TextStyle(
+                                                fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      Text(
+                                        item.currentCode,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: "Monaco",
+                                            color: Theme.of(context).colorScheme.primary),
+                                      )
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  // AnimatedLiquidCircularProgressIndicator(),
+                                  ProgressCircle(
+                                    value: item.timeValue,
+                                    innerColor: Colors.blue,
+                                    radius: 11,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
+                          onTap: () {
+                            if (isEditing) {
+                              ref.read(editItemProvider.notifier).update((state) => totp);
+                            } else {
+                              FlutterClipboard.copy(item.currentCode)
+                                  .then((value) => showSuccessToast(context, "验证码拷贝成功"));
+                            }
+                          },
+                          onLongPress: () {
+                            ref.read(editItemProvider.notifier).update((state) => totp);
+                            ref.read(editorProvider.notifier).update((state) => true);
+                          },
                         );
                       },
                       separatorBuilder: (context, index) {
