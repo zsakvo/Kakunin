@@ -30,7 +30,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
   Widget build(BuildContext context) {
     var uuid = const Uuid();
-    late String uuidVal;
+    var uuidVal = useState<String?>(null);
     final Totp totp = ref.watch(codeEditorProvider);
     final Totp? editItem = ref.watch(editItemProvider);
     final isDragging = ref.watch(dragProvider);
@@ -40,23 +40,6 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     final secrectTextController = useTextEditingController();
     final periodTextController = useTextEditingController(text: "30");
     final digitsTextController = useTextEditingController(text: "6");
-
-    if (editItem != null) {
-      uriTextController.text = editItem.otpauth ?? "";
-      issuerTextController.text = editItem.issuer ?? "";
-      labelTextController.text = editItem.label ?? "";
-      secrectTextController.text = editItem.secret ?? "";
-      periodTextController.text = editItem.period.toString();
-      digitsTextController.text = editItem.digits.toString();
-      uuidVal = editItem.uuid!;
-      Log.d("当前uuid：$uuidVal");
-    } else {
-      uuidVal = uuid.v4();
-      // uriTextController.text = "";
-      issuerTextController.text = "";
-      labelTextController.text = "";
-      secrectTextController.text = "";
-    }
 
     // periodTextController.text = totp.period.toString();
     // digitsTextController.text = totp.digits.toString();
@@ -111,6 +94,27 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     digitsListenr() => totpItemTextValueListener("digits", digitsTextController.text);
 
     useEffect(() {
+      Log.d("init");
+
+      if (editItem != null) {
+        uriTextController.text = editItem.otpauth ?? "";
+        issuerTextController.text = editItem.issuer ?? "";
+        labelTextController.text = editItem.label ?? "";
+        secrectTextController.text = editItem.secret ?? "";
+        periodTextController.text = editItem.period.toString();
+        digitsTextController.text = editItem.digits.toString();
+        uuidVal.value = editItem.uuid!;
+        Log.d("当前uuid：$uuidVal");
+      } else {
+        uuidVal.value = uuid.v4();
+        uriTextController.text = "";
+        issuerTextController.text = "";
+        labelTextController.text = "";
+        secrectTextController.text = "";
+      }
+
+      Log.d(uuidVal, "uuid");
+
       uriTextController.addListener(uriValueListener);
       issuerTextController.addListener(issuerListener);
       labelTextController.addListener(labelListener);
@@ -146,10 +150,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   algorithm: totp.algorithm,
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
-                  uuid: uuidVal);
+                  uuid: uuidVal.value);
 
-              Log.d("当前uuid：$uuidVal");
-              box.put(uuidVal, t);
+              Log.d("当前uuidX：${uuidVal.value}");
+              box.put(uuidVal.value, t);
               ref.read(totpItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
             },

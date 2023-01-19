@@ -63,7 +63,12 @@ class _MainViewState extends ConsumerState<MainView> {
       child: MacosWindow(
         child: IndexedStack(
           index: pageIndex,
-          children: const [AuthScreen(), CodeScreen()],
+          children: [
+            const AuthScreen(),
+            CodeScreen(
+              key: UniqueKey(),
+            )
+          ],
         ),
       ),
     );
