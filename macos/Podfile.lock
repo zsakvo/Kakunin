@@ -1,4 +1,6 @@
 PODS:
+  - contextual_menu (0.0.1):
+    - FlutterMacOS
   - desktop_drop (0.0.1):
     - FlutterMacOS
   - dynamic_color (0.0.2):
@@ -10,6 +12,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - contextual_menu (from `Flutter/ephemeral/.symlinks/plugins/contextual_menu/macos`)
   - desktop_drop (from `Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos`)
   - dynamic_color (from `Flutter/ephemeral/.symlinks/plugins/dynamic_color/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -17,6 +20,8 @@ DEPENDENCIES:
   - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
 
 EXTERNAL SOURCES:
+  contextual_menu:
+    :path: Flutter/ephemeral/.symlinks/plugins/contextual_menu/macos
   desktop_drop:
     :path: Flutter/ephemeral/.symlinks/plugins/desktop_drop/macos
   dynamic_color:
@@ -29,6 +34,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
 
 SPEC CHECKSUMS:
+  contextual_menu: 6d35fb15942c0d8769f5eae8d3bda653994a6f5a
   desktop_drop: 69eeff437544aa619c8db7f4481b3a65f7696898
   dynamic_color: 394d6a888650f8534e029b27d2f8bc5c64e44008
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811

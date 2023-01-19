@@ -49,8 +49,13 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       periodTextController.text = editItem.period.toString();
       digitsTextController.text = editItem.digits.toString();
       uuidVal = editItem.uuid!;
+      Log.d("当前uuid：$uuidVal");
     } else {
       uuidVal = uuid.v4();
+      // uriTextController.text = "";
+      issuerTextController.text = "";
+      labelTextController.text = "";
+      secrectTextController.text = "";
     }
 
     // periodTextController.text = totp.period.toString();
@@ -142,7 +147,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
                   uuid: uuidVal);
-              box.put("${issuerTextController.text}-${labelTextController.text}", t);
+
+              Log.d("当前uuid：$uuidVal");
+              box.put(uuidVal, t);
               ref.read(totpItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
             },

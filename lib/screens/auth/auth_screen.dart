@@ -1,6 +1,9 @@
 import 'package:clipboard/clipboard.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:contextual_menu/contextual_menu.dart';
+import 'package:flutter/cupertino.dart' hide MenuItem;
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' hide MenuItem;
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -8,6 +11,7 @@ import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/utils/flash.dart';
+import 'package:totp/utils/log.dart';
 
 part 'auth_screen.g.dart';
 
@@ -29,6 +33,12 @@ class AuthScreen extends ConsumerStatefulWidget {
 
 class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin {
   late AnimationController controller;
+
+  bool _shouldReact = false;
+  Offset? _position;
+  final Placement _placement = Placement.bottomLeft;
+
+  Menu? _menu;
 
   @override
   void initState() {
@@ -63,6 +73,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final box = Hive.box<Totp>("2fa");
     final bool isEditing = ref.watch(editorProvider);
     final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
@@ -87,6 +98,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         icon: const MacosIcon(CupertinoIcons.bandage),
                         showLabel: false,
                         onPressed: () {
+                          ref.read(editItemProvider.notifier).update((state) => null);
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
                     // const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
@@ -98,15 +110,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         icon: const MacosIcon(CupertinoIcons.ellipsis),
                         showLabel: false,
                         onPressed: () {
+                          ref.read(editorProvider.notifier).update((state) => false);
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
-                    const ToolBarIconButton(
+                    ToolBarIconButton(
                         label: "删除",
-                        icon: MacosIcon(
+                        icon: const MacosIcon(
                           CupertinoIcons.trash,
                           color: Color(0xffef5350),
                         ),
-                        showLabel: false)
+                        showLabel: false,
+                        onPressed: () async {
+                          ref.read(editorProvider.notifier).update((state) => false);
+                          await box.delete(editItem!.uuid);
+                          ref.read(totpItemsProvider.notifier).update();
+                        })
                   ],
           ),
           children: [
@@ -118,68 +136,83 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                       itemBuilder: (context, index) {
                         final item = totpItems[index];
                         final Totp totp = item.totp;
-                        return GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          child: Container(
-                            color: isEditing && editItem == totp ? Colors.blue[50] : Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                        return Listener(
+                            onPointerDown: (event) {
+                              _shouldReact =
+                                  event.kind == PointerDeviceKind.mouse && event.buttons == kSecondaryMouseButton;
+                            },
+                            onPointerUp: (event) {
+                              if (!_shouldReact) return;
+
+                              _position = Offset(
+                                event.position.dx,
+                                event.position.dy,
+                              );
+
+                              _handleClickPopUp(totp);
+                            },
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              child: Container(
+                                color: isEditing && editItem == totp ? Colors.blue[50] : Colors.transparent,
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      Row(
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            totp.issuer ?? "",
-                                            style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                totp.issuer ?? "",
+                                                style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                              ),
+                                              Text(
+                                                " (${totp.label!})",
+                                                style: const TextStyle(
+                                                    fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
                                           ),
                                           Text(
-                                            " (${totp.label!})",
-                                            style: const TextStyle(
-                                                fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                            item.currentCode,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontFamily: "Monaco",
+                                                color: Theme.of(context).colorScheme.primary),
                                           )
                                         ],
                                       ),
-                                      const SizedBox(
-                                        height: 8,
+                                      const Spacer(),
+                                      // AnimatedLiquidCircularProgressIndicator(),
+                                      ProgressCircle(
+                                        value: item.timeValue,
+                                        innerColor: Colors.blue,
+                                        radius: 11,
                                       ),
-                                      Text(
-                                        item.currentCode,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontFamily: "Monaco",
-                                            color: Theme.of(context).colorScheme.primary),
-                                      )
                                     ],
                                   ),
-                                  const Spacer(),
-                                  // AnimatedLiquidCircularProgressIndicator(),
-                                  ProgressCircle(
-                                    value: item.timeValue,
-                                    innerColor: Colors.blue,
-                                    radius: 11,
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                          onTap: () {
-                            if (isEditing) {
-                              ref.read(editItemProvider.notifier).update((state) => totp);
-                            } else {
-                              FlutterClipboard.copy(item.currentCode)
-                                  .then((value) => showSuccessToast(context, "验证码拷贝成功"));
-                            }
-                          },
-                          onLongPress: () {
-                            ref.read(editItemProvider.notifier).update((state) => totp);
-                            ref.read(editorProvider.notifier).update((state) => true);
-                          },
-                        );
+                              onTap: () {
+                                if (isEditing) {
+                                  ref.read(editItemProvider.notifier).update((state) => totp);
+                                } else {
+                                  FlutterClipboard.copy(item.currentCode)
+                                      .then((value) => showSuccessToast(context, "验证码拷贝成功"));
+                                }
+                              },
+                              onLongPress: () {
+                                ref.read(editItemProvider.notifier).update((state) => totp);
+                                ref.read(editorProvider.notifier).update((state) => true);
+                              },
+                            ));
                       },
                       separatorBuilder: (context, index) {
                         return const Padding(
@@ -199,6 +232,42 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
           ],
         );
       },
+    );
+  }
+
+  void _onClick(MenuItem item, Totp totp) async {
+    final box = Hive.box<Totp>("2fa");
+    Log.d(box.keys);
+    Log.d(item.label, "点击菜单");
+    switch (item.label) {
+      case "编辑":
+        ref.read(editItemProvider.notifier).update((state) => totp);
+        ref.read(pageProvider.notifier).update((state) => 1);
+        break;
+      case "删除":
+        await box.delete(totp.uuid);
+        ref.read(totpItemsProvider.notifier).update();
+        break;
+    }
+  }
+
+  void _handleClickPopUp(Totp totp) {
+    _menu ??= Menu(
+      items: [
+        MenuItem(
+          label: '编辑',
+          onClick: (MenuItem menuItem) => _onClick(menuItem, totp),
+        ),
+        MenuItem(
+          label: '删除',
+          onClick: (MenuItem menuItem) => _onClick(menuItem, totp),
+        ),
+      ],
+    );
+    popUpContextualMenu(
+      _menu!,
+      position: _position,
+      placement: _placement,
     );
   }
 }

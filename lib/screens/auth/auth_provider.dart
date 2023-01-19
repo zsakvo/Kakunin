@@ -47,9 +47,9 @@ class TotpItem {
 
   void setTimeValue() {
     timeValue = OTP.remainingSeconds(interval: 30) * 1.00;
-    const period = Duration(milliseconds: 30);
+    const period = Duration(seconds: 1);
     Timer.periodic(period, (timer) {
-      double num = 100 / (1000);
+      double num = 100 / 30;
       if (timeValue - num > 0) {
         timeValue -= num;
       } else {
