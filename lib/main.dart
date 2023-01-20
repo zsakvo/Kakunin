@@ -2,6 +2,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart' hide MenuItem;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
@@ -26,6 +27,12 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+  await localNotifier.setup(
+    appName: '二步验证',
+    // 参数 shortcutPolicy 仅适用于 Windows
+    shortcutPolicy: ShortcutPolicy.requireCreate,
+  );
+
   await Hive.initFlutter();
   Hive.registerAdapter(TotpAdapter());
   await Hive.openBox<Totp>('2fa');

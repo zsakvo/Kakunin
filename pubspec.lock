@@ -408,6 +408,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0"
+  local_notifier:
+    dependency: "direct main"
+    description:
+      name: local_notifier
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.5"
   logger:
     dependency: "direct main"
     description:

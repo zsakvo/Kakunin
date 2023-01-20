@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide MenuItem;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:totp/data/entity/totp.dart';
@@ -298,7 +299,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   void onTrayMenuItemClick(MenuItem menuItem) {
     if (menuItem.label!.contains("\t")) {
       final code = menuItem.label!.split("\t")[1];
-      FlutterClipboard.copy(code);
+      final label = menuItem.label!.split("\t")[0].split("-")[1];
+      FlutterClipboard.copy(code).then((value) {
+        LocalNotification(
+          title: label,
+          body: "验证码复制成功",
+        ).show();
+      });
     } else {
       exit(0);
     }
