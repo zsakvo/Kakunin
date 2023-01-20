@@ -59,10 +59,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       issuerTextController.text = issuer;
       labelTextController.text = path;
       secrectTextController.text = secret;
-      periodTextController.text = period;
+      periodTextController.text = period.isNotEmpty ? period : "30";
       // ref.read(codeEditorProvider.notifier).setPeriod(int.tryParse(period) ?? 30);
       // ref.read(codeEditorProvider.notifier).setDigits(int.tryParse(digits) ?? 6);
-      digitsTextController.text = digits;
+      digitsTextController.text = digits.isNotEmpty ? digits : "6";
 
       if (scheme.isNotEmpty) {
         if (!["TOTP", "HOTP"].contains(scheme)) {
@@ -141,6 +141,17 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
             showLabel: false,
             onPressed: () {
               // print("click");
+              var uri = Uri(
+                  scheme: "otpauth",
+                  host: ref.read(codeEditorProvider).scheme,
+                  path: labelTextController.text,
+                  queryParameters: {
+                    "secrect": secrectTextController.text,
+                    "issuer": issuerTextController.text,
+                    "algorithm": ref.read(codeEditorProvider).algorithm,
+                    "digits": digitsTextController.text,
+                    "period": periodTextController.text,
+                  });
               var box = Hive.box<Totp>("2fa");
               Totp t = Totp(
                   scheme: "otpauth",
@@ -148,6 +159,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   issuer: issuerTextController.text,
                   secret: secrectTextController.text,
                   algorithm: totp.algorithm,
+                  otpauth: uri.toString(),
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
                   uuid: uuidVal.value);

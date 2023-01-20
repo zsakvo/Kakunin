@@ -144,6 +144,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                             onPointerUp: (event) {
                               if (!_shouldReact) return;
 
+                              ref.read(editItemProvider.notifier).update((state) => totp);
+
                               _position = Offset(
                                 event.position.dx,
                                 event.position.dy,
@@ -241,10 +243,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     Log.d(item.label, "点击菜单");
     switch (item.label) {
       case "编辑":
-        ref.read(editItemProvider.notifier).update((state) => totp);
         ref.read(pageProvider.notifier).update((state) => 1);
         break;
       case "删除":
+        Log.d("删除的uuid：${totp.uuid!}");
         await box.delete(totp.uuid);
         ref.read(totpItemsProvider.notifier).update();
         break;
