@@ -95,7 +95,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
                     // const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
-                    const ToolBarIconButton(label: "设置", icon: MacosIcon(CupertinoIcons.settings), showLabel: false)
+                    ToolBarIconButton(
+                        label: "设置",
+                        icon: const MacosIcon(CupertinoIcons.settings),
+                        showLabel: false,
+                        onPressed: () {
+                          ref.read(pageProvider.notifier).update((state) => 2);
+                        })
                   ]
                 : [
                     ToolBarIconButton(

@@ -7,6 +7,7 @@ import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
+import 'package:totp/screens/config/config_screen.dart';
 import 'package:totp/utils/log.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
@@ -83,7 +84,8 @@ class _MainViewState extends ConsumerState<MainView> {
             const AuthScreen(),
             CodeScreen(
               key: UniqueKey(),
-            )
+            ),
+            const ConfigScreen()
           ],
         ),
       ),
