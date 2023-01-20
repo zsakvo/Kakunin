@@ -133,7 +133,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
 
     return MacosScaffold(
       toolBar: ToolBar(
-        title: const Text("新增凭证"),
+        title: Text(editItem == null ? "新增凭证" : "编辑凭证"),
         actions: [
           ToolBarIconButton(
             label: "保存",
