@@ -7,6 +7,7 @@ import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
+import 'package:totp/utils/log.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -31,14 +32,12 @@ void main() async {
   runApp(const ProviderScope(child: App()));
 }
 
-class App extends StatelessWidget with TrayListener {
+class App extends StatelessWidget {
   const App({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    trayManager.addListener(this);
-    trayManager.setIcon("assets/img/tray_icon.png");
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
       return MacosApp(
         title: 'totp',
@@ -49,33 +48,6 @@ class App extends StatelessWidget with TrayListener {
         debugShowCheckedModeBanner: false,
       );
     });
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    print('onTrayIconMouseDown');
-    trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconMouseUp() {
-    print('onTrayIconMouseUp');
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    print('onTrayIconRightMouseDown');
-    // trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconRightMouseUp() {
-    print('onTrayIconRightMouseUp');
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    print(menuItem.toJson());
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clipboard/clipboard.dart';
 import 'package:contextual_menu/contextual_menu.dart';
 import 'package:flutter/cupertino.dart' hide MenuItem;
@@ -32,7 +34,7 @@ class AuthScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin {
+class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin, TrayListener {
   late AnimationController controller;
 
   bool _shouldReact = false;
@@ -44,25 +46,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-      value: 1.0,
-
-      /// [AnimationController]s can be created with `vsync: this` because of
-      /// [TickerProviderStateMixin].
-      vsync: this,
-      duration: const Duration(seconds: 30),
-      reverseDuration: const Duration(seconds: 30),
-    )..addListener(() {
-        setState(() {
-          if (controller.value == 0) {
-            controller.value = 1.0;
-            controller.reverse();
-          }
-        });
-      });
-    // controller.reverse(from: controller.upperBound);
-    // controller.repeat(reverse: false);
-    controller.reverse();
+    trayManager.addListener(this);
+    trayManager.setIcon("assets/img/tray_icon.png");
     super.initState();
   }
 
@@ -83,6 +68,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
             MenuItem(label: "${e.totp.issuer != null ? ("${e.totp.issuer!}-") : ""}${e.totp.label}\t${e.currentCode}"))
         .toList();
     menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
+    menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
     trayManager.setContextMenu(Menu(items: menuItems));
     return ContentArea(
       builder: (context, scrollController) {
@@ -278,5 +264,37 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       position: _position,
       placement: _placement,
     );
+  }
+
+  @override
+  void onTrayIconMouseDown() {
+    Log.d('onTrayIconMouseDown');
+    trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayIconMouseUp() {
+    Log.d('onTrayIconMouseUp');
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    Log.d('onTrayIconRightMouseDown');
+    // trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayIconRightMouseUp() {
+    Log.d('onTrayIconRightMouseUp');
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    if (menuItem.label!.contains("\t")) {
+      final code = menuItem.label!.split("\t")[1];
+      FlutterClipboard.copy(code);
+    } else {
+      exit(0);
+    }
   }
 }
