@@ -7,8 +7,11 @@ import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
+import 'package:window_manager/window_manager.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(TotpAdapter());
   await Hive.openBox<Totp>('2fa');

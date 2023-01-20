@@ -81,6 +81,10 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
     Box<Totp> box = Hive.box("2fa");
     state = [...box.values.toList().map((e) => TotpItem(totp: e, backgroundColor: Colors.blue)).toList()];
   }
+
+  remove(Totp totp) {
+    state = state.where((element) => element.totp != totp).toList();
+  }
 }
 
 final totpItemsProvider = StateNotifierProvider<TotpItemsNotifier, List<TotpItem>>((ref) {

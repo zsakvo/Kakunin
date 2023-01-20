@@ -248,7 +248,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       case "删除":
         Log.d("删除的uuid：${totp.uuid!}");
         await box.delete(totp.uuid);
-        ref.read(totpItemsProvider.notifier).update();
+        ref.read(totpItemsProvider.notifier).remove(totp);
         break;
     }
   }
