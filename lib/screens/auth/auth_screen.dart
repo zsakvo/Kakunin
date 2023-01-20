@@ -12,6 +12,7 @@ import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/utils/flash.dart';
 import 'package:totp/utils/log.dart';
+import 'package:tray_manager/tray_manager.dart';
 
 part 'auth_screen.g.dart';
 
@@ -77,6 +78,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     final bool isEditing = ref.watch(editorProvider);
     final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
+    final menuItems = totpItems
+        .map((e) =>
+            MenuItem(label: "${e.totp.issuer != null ? ("${e.totp.issuer!}-") : ""}${e.totp.label}\t${e.currentCode}"))
+        .toList();
+    menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
+    trayManager.setContextMenu(Menu(items: menuItems));
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
