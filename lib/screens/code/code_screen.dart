@@ -94,8 +94,6 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     digitsListenr() => totpItemTextValueListener("digits", digitsTextController.text);
 
     useEffect(() {
-      Log.d("init");
-
       if (editItem != null) {
         uriTextController.text = editItem.otpauth ?? "";
         issuerTextController.text = editItem.issuer ?? "";
@@ -112,8 +110,6 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
         labelTextController.text = "";
         secrectTextController.text = "";
       }
-
-      Log.d(uuidVal, "uuid");
 
       uriTextController.addListener(uriValueListener);
       issuerTextController.addListener(issuerListener);

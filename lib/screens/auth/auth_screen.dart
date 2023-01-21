@@ -51,6 +51,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     trayManager.addListener(this);
     trayManager.setIcon("assets/img/tray_icon.png");
     super.initState();
+    ref.read(totpItemsProvider.notifier).chronometer();
   }
 
   @override
@@ -136,7 +137,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                   child: ListView.separated(
                       itemBuilder: (context, index) {
                         final item = totpItems[index];
-                        Log.d(item, "xxxz");
                         final Totp totp = item.totp;
                         return Listener(
                             onPointerDown: (event) {

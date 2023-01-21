@@ -3,169 +3,107 @@ import 'dart:async';
 import 'package:flutter/material.dart' hide MenuItem;
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:otp/otp.dart';
 import 'package:totp/data/entity/totp.dart';
-import 'package:totp/utils/log.dart';
 
 class TotpItem {
   Totp totp;
   final AnimationController? controller;
-  final Color backgroundColor;
-  int leftTime;
+  // final Color backgroundColor;
+  double leftTime;
   String currentCode;
   double timeValue;
 
   TotpItem(
-      {required this.totp,
-      this.controller,
-      required this.backgroundColor,
-      this.leftTime = 30,
-      this.timeValue = 100.0,
-      this.currentCode = "------"}) {
-    setTimeValue();
-    // leftTime = totp.period!;
-    // final ts = DateTime.now().millisecondsSinceEpoch;
-    // currentCode = OTP.generateTOTPCodeString(
-    //   totp.secret!,
-    //   ts,
-    // );
-    // setTime();
-  }
-
-  // void setTime() {
-  //   const period = Duration(seconds: 30);
-  //   Timer.periodic(period, (timer) {
-  //     final ts = DateTime.now().millisecondsSinceEpoch;
-  //     // print(ts);
-  //     currentCode = OTP.generateTOTPCodeString(
-  //       totp.secret!,
-  //       ts,
-  //       algorithm: Algorithm.SHA1,
-  //     );
-  //   });
-  // }
-
-  void setTimeValue() {
-    Log.d("setTimeVal");
-    timeValue = OTP.remainingSeconds(interval: 30) * 1.00;
-    const period = Duration(seconds: 1);
-    Timer.periodic(period, (timer) {
-      double num = 100 / 30;
-      if (timeValue - num > 0) {
-        timeValue -= num;
-      } else {
-        final ts = DateTime.now().millisecondsSinceEpoch;
-        currentCode = OTP.generateTOTPCodeString(
-          totp.secret!,
-          ts,
-          algorithm: Algorithm.SHA1,
-        );
-        timeValue = 100 - (num - timeValue);
-      }
-      // final ts = DateTime.now().millisecondsSinceEpoch;
-      // timeValue -= 100 / 30;
-    });
-  }
-
+      {required this.totp, this.controller, this.leftTime = 30, this.timeValue = 100.0, this.currentCode = "------"});
   void setTotp(Totp t) {
     totp = t;
   }
-  // final
 }
 
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
+  final timers = [];
+  late final Timer timer;
   TotpItemsNotifier() : super([]) {
     update();
   }
 
   update() {
     Box<Totp> box = Hive.box("2fa");
-    state = [...box.values.toList().map((e) => TotpItem(totp: e, backgroundColor: Colors.blue)).toList()];
+    state = [
+      ...box.values
+          .toList()
+          .map((e) => TotpItem(
+                totp: e,
+              ))
+          .toList()
+    ];
+
+    state = state.map((totpItem) {
+      Totp totp = totpItem.totp;
+      late Algorithm algorithm;
+      if (totp.algorithm == "SHA1") {
+        algorithm = Algorithm.SHA1;
+      } else if (totp.algorithm == "SHA256") {
+        algorithm = Algorithm.SHA256;
+      } else if (totp.algorithm == "SHA512") {
+        algorithm = algorithm = Algorithm.SHA512;
+      }
+      final ts = DateTime.now().millisecondsSinceEpoch;
+      final code = OTP.generateTOTPCodeString(
+        totpItem.totp.secret!,
+        ts,
+        algorithm: algorithm,
+      );
+      final leftTime = OTP.remainingSeconds(interval: totp.period!) * 1.0;
+      final timeValue = 100.0 * (leftTime / totp.period!);
+      return TotpItem(totp: totp, currentCode: code, leftTime: leftTime, timeValue: timeValue);
+    }).toList();
   }
 
   remove(Totp totp) {
     state = state.where((element) => element.totp != totp).toList();
+  }
+
+  chronometer() {
+    var d = 1;
+    var period = Duration(seconds: d);
+    timer = Timer.periodic(period, (timer) {
+      var stateX = [];
+      for (var i = 0; i < state.length; i++) {
+        TotpItem totpItem = state[i];
+        Totp totp = totpItem.totp;
+        final ts = DateTime.now().millisecondsSinceEpoch;
+        late Algorithm algorithm;
+        if (totp.algorithm == "SHA1") {
+          algorithm = Algorithm.SHA1;
+        } else if (totp.algorithm == "SHA256") {
+          algorithm = Algorithm.SHA256;
+        } else if (totp.algorithm == "SHA512") {
+          algorithm = algorithm = Algorithm.SHA512;
+        }
+        // final num = 100 * 1 / totp.period!;
+        double leftTime;
+        String currentCode;
+        double timeValue;
+        if (totpItem.leftTime > d) {
+          leftTime = totpItem.leftTime - d;
+          currentCode = totpItem.currentCode;
+        } else {
+          leftTime = totp.period! - (d - totpItem.leftTime);
+          currentCode = OTP.generateTOTPCodeString(totp.secret!, ts, algorithm: algorithm);
+        }
+        timeValue = (leftTime / totp.period!) * 100.0;
+        stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
+      }
+      state = [...stateX];
+    });
   }
 }
 
 final totpItemsProvider = StateNotifierProvider<TotpItemsNotifier, List<TotpItem>>((ref) {
   return TotpItemsNotifier();
 });
-
-class LeftTimeNotifier extends StateNotifier<double> {
-  // We initialize the list of todos to an empty list
-  LeftTimeNotifier() : super(1.0) {
-    setTime();
-  }
-
-  void setTime() {
-    const period = Duration(microseconds: 10);
-    Timer.periodic(period, (timer) {
-      if (state > (1 / 30)) {
-        state -= 1 / 30;
-      } else {
-        state = 1.0;
-      }
-    });
-  }
-}
-
-// Finally, we are using StateNotifierProvider to allow the UI to interact with
-// our TodosNotifier class.
-final leftTimeProvider = StateNotifierProvider<LeftTimeNotifier, double>((ref) {
-  return LeftTimeNotifier();
-});
-
-////////
-///
-///
-///
-
-class AnimatedLiquidCircularProgressIndicator extends StatefulWidget {
-  const AnimatedLiquidCircularProgressIndicator({super.key});
-
-  @override
-  State<StatefulWidget> createState() => AnimatedLiquidCircularProgressIndicatorState();
-}
-
-class AnimatedLiquidCircularProgressIndicatorState extends State<AnimatedLiquidCircularProgressIndicator>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 30),
-    );
-
-    _animationController.addListener(() => setState(() {}));
-    _animationController.repeat();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 36.0,
-        height: 36.0,
-        child: LiquidCircularProgressIndicator(
-          value: _animationController.value,
-          backgroundColor: Colors.blue[100],
-          valueColor: const AlwaysStoppedAnimation(Colors.blue),
-        ),
-      ),
-    );
-  }
-}
 
 final editorProvider = StateProvider<bool>(((ref) => false));
 
