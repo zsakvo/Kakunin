@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:otp/otp.dart';
 import 'package:totp/data/entity/totp.dart';
+import 'package:totp/utils/log.dart';
 
 class TotpItem {
   Totp totp;
@@ -22,30 +23,31 @@ class TotpItem {
       this.leftTime = 30,
       this.timeValue = 100.0,
       this.currentCode = "------"}) {
-    leftTime = totp.period ?? 30;
-    final ts = DateTime.now().millisecondsSinceEpoch;
-    currentCode = OTP.generateTOTPCodeString(
-      totp.secret!,
-      ts,
-    );
-    // setTime();
     setTimeValue();
+    // leftTime = totp.period!;
+    // final ts = DateTime.now().millisecondsSinceEpoch;
+    // currentCode = OTP.generateTOTPCodeString(
+    //   totp.secret!,
+    //   ts,
+    // );
+    // setTime();
   }
 
-  void setTime() {
-    const period = Duration(seconds: 30);
-    Timer.periodic(period, (timer) {
-      final ts = DateTime.now().millisecondsSinceEpoch;
-      // print(ts);
-      currentCode = OTP.generateTOTPCodeString(
-        totp.secret!,
-        ts,
-        algorithm: Algorithm.SHA1,
-      );
-    });
-  }
+  // void setTime() {
+  //   const period = Duration(seconds: 30);
+  //   Timer.periodic(period, (timer) {
+  //     final ts = DateTime.now().millisecondsSinceEpoch;
+  //     // print(ts);
+  //     currentCode = OTP.generateTOTPCodeString(
+  //       totp.secret!,
+  //       ts,
+  //       algorithm: Algorithm.SHA1,
+  //     );
+  //   });
+  // }
 
   void setTimeValue() {
+    Log.d("setTimeVal");
     timeValue = OTP.remainingSeconds(interval: 30) * 1.00;
     const period = Duration(seconds: 1);
     Timer.periodic(period, (timer) {

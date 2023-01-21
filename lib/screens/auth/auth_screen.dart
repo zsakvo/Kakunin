@@ -136,6 +136,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                   child: ListView.separated(
                       itemBuilder: (context, index) {
                         final item = totpItems[index];
+                        Log.d(item, "xxxz");
                         final Totp totp = item.totp;
                         return Listener(
                             onPointerDown: (event) {
