@@ -99,6 +99,16 @@ class Totp extends Equatable {
 
   @override
   List<Object?> get props {
-    return [secret, label, issuer, otpauth, algorithm, scheme, digits, period, uuid];
+    return [
+      secret,
+      label,
+      issuer,
+      otpauth,
+      algorithm,
+      scheme,
+      digits,
+      period,
+      uuid
+    ];
   }
 }

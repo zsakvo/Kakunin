@@ -388,7 +388,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                                   if (result != null) {
                                     File file = File(result.files.single.path!);
                                     String? text = await QrUtil.decodeText(file, context);
-                                    if (text != null) uriTextController.text = text;
+                                    if (text != null) {
+                                      uriTextController.text = text;
+                                    }
                                   } else {
                                     // User canceled the picker
                                     // showErrorToast(context, "文件未被选择");

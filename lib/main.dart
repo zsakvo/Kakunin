@@ -4,13 +4,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:totp/data/entity/config.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
 import 'package:totp/screens/config/config_screen.dart';
-import 'package:totp/utils/log.dart';
-import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -34,6 +33,7 @@ void main() async {
   );
 
   await Hive.initFlutter();
+  Hive.registerAdapter(ConfigAdapter());
   Hive.registerAdapter(TotpAdapter());
   await Hive.openBox<Totp>('2fa');
 
@@ -99,7 +99,6 @@ class _MainViewState extends ConsumerState<MainView> {
     );
   }
 }
-
 
 // class MainView extends StatefulWidget {
 //   const MainView({super.key});

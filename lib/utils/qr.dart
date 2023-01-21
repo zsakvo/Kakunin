@@ -13,7 +13,9 @@ class QrUtil {
     var codec = await ui.instantiateImageCodec(byteData);
     ui.FrameInfo fi = await codec.getNextFrame();
     ui.Image image = fi.image;
-    var bytes = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!.buffer.asUint8List();
+    var bytes = (await image.toByteData(format: ui.ImageByteFormat.rawRgba))!
+        .buffer
+        .asUint8List();
     qrCode.scanRgbaBytes(bytes, image.width, image.height);
     if (qrCode.location == null) {
       showErrorToast(context, "图片中没有找到二维码");

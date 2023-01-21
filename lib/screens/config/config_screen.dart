@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
@@ -32,7 +31,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
             ContentArea(
               builder: (context, scrollController) {
                 return Padding(
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
                   child: ListView(
                     children: [
                       Container(

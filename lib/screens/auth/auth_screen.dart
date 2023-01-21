@@ -35,7 +35,8 @@ class AuthScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin, TrayListener {
+class _AuthScreenState extends ConsumerState<AuthScreen>
+    with TickerProviderStateMixin, TrayListener {
   late AnimationController controller;
 
   bool _shouldReact = false;
@@ -65,8 +66,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     final menuItems = totpItems
-        .map((e) =>
-            MenuItem(label: "${e.totp.issuer != null ? ("${e.totp.issuer!}-") : ""}${e.totp.label}\t${e.currentCode}"))
+        .map((e) => MenuItem(
+            label:
+                "${e.totp.issuer != null ? ("${e.totp.issuer!}-") : ""}${e.totp.label}\t${e.currentCode}"))
         .toList();
     menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
     menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
@@ -80,7 +82,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                 ? MacosBackButton(
                     fillColor: Colors.transparent,
                     onPressed: () {
-                      ref.read(editorProvider.notifier).update((state) => false);
+                      ref
+                          .read(editorProvider.notifier)
+                          .update((state) => false);
                     },
                   )
                 : null,
@@ -92,7 +96,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         icon: const MacosIcon(CupertinoIcons.bandage),
                         showLabel: false,
                         onPressed: () {
-                          ref.read(editItemProvider.notifier).update((state) => null);
+                          ref
+                              .read(editItemProvider.notifier)
+                              .update((state) => null);
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
                     // const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
@@ -110,7 +116,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         icon: const MacosIcon(CupertinoIcons.ellipsis),
                         showLabel: false,
                         onPressed: () {
-                          ref.read(editorProvider.notifier).update((state) => false);
+                          ref
+                              .read(editorProvider.notifier)
+                              .update((state) => false);
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
                     ToolBarIconButton(
@@ -121,7 +129,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         ),
                         showLabel: false,
                         onPressed: () async {
-                          ref.read(editorProvider.notifier).update((state) => false);
+                          ref
+                              .read(editorProvider.notifier)
+                              .update((state) => false);
                           await box.delete(editItem!.uuid);
                           ref.read(totpItemsProvider.notifier).update();
                         })
@@ -139,12 +149,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         return Listener(
                             onPointerDown: (event) {
                               _shouldReact =
-                                  event.kind == PointerDeviceKind.mouse && event.buttons == kSecondaryMouseButton;
+                                  event.kind == PointerDeviceKind.mouse &&
+                                      event.buttons == kSecondaryMouseButton;
                             },
                             onPointerUp: (event) {
                               if (!_shouldReact) return;
 
-                              ref.read(editItemProvider.notifier).update((state) => totp);
+                              ref
+                                  .read(editItemProvider.notifier)
+                                  .update((state) => totp);
 
                               _position = Offset(
                                 event.position.dx,
@@ -156,26 +169,36 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                             child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               child: Container(
-                                color: isEditing && editItem == totp ? Colors.blue[50] : Colors.transparent,
-                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                color: isEditing && editItem == totp
+                                    ? Colors.blue[50]
+                                    : Colors.transparent,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
                                                 totp.issuer ?? "",
-                                                style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontFamily: "Monaco"),
                                               ),
                                               Text(
                                                 " (${totp.label!})",
                                                 style: const TextStyle(
-                                                    fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                                    fontSize: 15,
+                                                    fontFamily: "Monaco",
+                                                    color: Color(0xFF919191)),
                                               )
                                             ],
                                           ),
@@ -187,7 +210,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                             style: TextStyle(
                                                 fontSize: 20,
                                                 fontFamily: "Monaco",
-                                                color: Theme.of(context).colorScheme.primary),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary),
                                           )
                                         ],
                                       ),
@@ -204,15 +229,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                               ),
                               onTap: () {
                                 if (isEditing) {
-                                  ref.read(editItemProvider.notifier).update((state) => totp);
+                                  ref
+                                      .read(editItemProvider.notifier)
+                                      .update((state) => totp);
                                 } else {
-                                  FlutterClipboard.copy(item.currentCode)
-                                      .then((value) => showSuccessToast(context, "验证码拷贝成功"));
+                                  FlutterClipboard.copy(item.currentCode).then(
+                                      (value) =>
+                                          showSuccessToast(context, "验证码拷贝成功"));
                                 }
                               },
                               onLongPress: () {
-                                ref.read(editItemProvider.notifier).update((state) => totp);
-                                ref.read(editorProvider.notifier).update((state) => true);
+                                ref
+                                    .read(editItemProvider.notifier)
+                                    .update((state) => totp);
+                                ref
+                                    .read(editorProvider.notifier)
+                                    .update((state) => true);
                               },
                             ));
                       },
