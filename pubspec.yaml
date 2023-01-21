@@ -34,6 +34,7 @@ dependencies:
   # launch_at_startup: ^0.2.1
   contextual_menu: ^0.1.2
   uuid: ^3.0.7
+  url_launcher: ^6.1.8
 
 dev_dependencies:
   flutter_test:

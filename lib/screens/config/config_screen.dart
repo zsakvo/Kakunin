@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
 import 'package:totp/utils/flash.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../main_provider.dart';
 import '../auth/auth_provider.dart';
@@ -108,6 +109,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                       ),
                       const Divider(),
                       GestureDetector(
+                        behavior: HitTestBehavior.translucent,
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: Column(
@@ -132,20 +134,26 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                         },
                       ),
                       const Divider(),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("关于应用"),
-                            Text(
-                              "基于 Flutter 构建， MacOS 样式的二步验证工具",
-                              style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
-                            )
-                          ],
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("关于应用"),
+                              Text(
+                                "基于 Flutter 构建， MacOS 样式的二步验证工具",
+                                style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
+                        onTap: () {
+                          launchUrl(Uri.parse("https://github.com/zsakvo/2fa"));
+                        },
+                      )
                     ],
                   ),
                 );
