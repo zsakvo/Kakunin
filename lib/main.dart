@@ -14,12 +14,17 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(ConfigAdapter());
+  Hive.registerAdapter(TotpAdapter());
+  await Hive.openBox<Totp>('2fa');
+  final configBox = await Hive.openBox<Config>('config');
   await windowManager.ensureInitialized();
-  WindowOptions windowOptions = const WindowOptions(
-    size: Size(420, 840),
+  WindowOptions windowOptions = WindowOptions(
+    size: const Size(420, 840),
     center: false,
     backgroundColor: Colors.transparent,
-    skipTaskbar: false,
+    skipTaskbar: configBox.get("global")!.skipDock!,
     titleBarStyle: TitleBarStyle.hidden,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -31,12 +36,6 @@ void main() async {
     // 参数 shortcutPolicy 仅适用于 Windows
     shortcutPolicy: ShortcutPolicy.requireCreate,
   );
-
-  await Hive.initFlutter();
-  Hive.registerAdapter(ConfigAdapter());
-  Hive.registerAdapter(TotpAdapter());
-  await Hive.openBox<Totp>('2fa');
-  await Hive.openBox<Config>('config');
 
   runApp(const ProviderScope(child: App()));
 }

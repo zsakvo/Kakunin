@@ -1,6 +1,10 @@
+import 'dart:ui';
+
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:totp/data/entity/config.dart';
+import 'package:totp/utils/log.dart';
+import 'package:window_manager/window_manager.dart';
 
 final _box = Hive.box<Config>("config");
 
@@ -18,7 +22,9 @@ class ConfigNotifier extends StateNotifier<Config> {
   }
 
   toggleSkipDock() {
-    state = state.copyWith(skipDock: !state.skipDock!);
+    bool val = !state.skipDock!;
+    state = state.copyWith(skipDock: val);
+    windowManager.setSkipTaskbar(val);
     saveConfig();
   }
 
