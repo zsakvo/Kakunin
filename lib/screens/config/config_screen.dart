@@ -1,8 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:totp/data/entity/totp.dart';
+import 'package:totp/utils/flash.dart';
 
 import '../../main_provider.dart';
+import '../auth/auth_provider.dart';
 
 class ConfigScreen extends StatefulHookConsumerWidget {
   const ConfigScreen({super.key});
@@ -101,21 +107,29 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                         ),
                       ),
                       const Divider(),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "清空记录",
-                              style: TextStyle(color: Color(0xffef5350), fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              "这会清空你的全部记录，不会二次确认，请谨慎操作",
-                              style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
-                            )
-                          ],
+                      GestureDetector(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "清空记录",
+                                style: TextStyle(color: Color(0xffef5350), fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                "这会清空你的全部记录，不会二次确认，请谨慎操作",
+                                style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
+                              )
+                            ],
+                          ),
                         ),
+                        onTap: () async {
+                          var box = Hive.box<Totp>("2fa");
+                          await box.clear();
+                          showSuccessToast(context, "数据清除完毕");
+                          ref.read(totpItemsProvider.notifier).update();
+                        },
                       ),
                       const Divider(),
                       Container(
