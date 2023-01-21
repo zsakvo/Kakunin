@@ -31,10 +31,11 @@ dependencies:
   window_manager: ^0.3.0
   tray_manager: ^0.2.0
   local_notifier: ^0.1.5
-  # launch_at_startup: ^0.2.1
+  launch_at_startup: ^0.2.1
   contextual_menu: ^0.1.2
   uuid: ^3.0.7
   url_launcher: ^6.1.8
+  package_info_plus: ^3.0.2
 
 dev_dependencies:
   flutter_test:
