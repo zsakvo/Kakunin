@@ -103,12 +103,29 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                       ),
                       const Divider(),
                       Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "清空记录",
+                              style: TextStyle(color: Color(0xffef5350), fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "这会清空你的全部记录，不会二次确认，请谨慎操作",
+                              style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
+                            )
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      Container(
                         margin: const EdgeInsets.symmetric(vertical: 14),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("关于应用"),
+                            const Text("关于应用"),
                             Text(
                               "基于 Flutter 构建， MacOS 样式的二步验证工具",
                               style: TextStyle(fontSize: 13, height: 1.8, color: Colors.grey[500]),
