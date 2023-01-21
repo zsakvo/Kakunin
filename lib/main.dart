@@ -36,6 +36,7 @@ void main() async {
   Hive.registerAdapter(ConfigAdapter());
   Hive.registerAdapter(TotpAdapter());
   await Hive.openBox<Totp>('2fa');
+  await Hive.openBox<Config>('config');
 
   runApp(const ProviderScope(child: App()));
 }

@@ -5,9 +5,11 @@ import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/totp.dart';
+import 'package:totp/screens/config/config_provider.dart';
 import 'package:totp/utils/flash.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../data/entity/config.dart';
 import '../../main_provider.dart';
 import '../auth/auth_provider.dart';
 
@@ -21,6 +23,8 @@ class ConfigScreen extends StatefulHookConsumerWidget {
 class _ConfigScreenState extends ConsumerState<ConfigScreen> {
   @override
   Widget build(BuildContext context) {
+    Config config = ref.watch(configProvider);
+    ConfigNotifier configNotifier = ref.read(configProvider.notifier);
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
@@ -53,9 +57,9 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                                 scaleX: 0.6,
                                 scaleY: 0.6,
                                 child: MacosSwitch(
-                                  value: true,
+                                  value: config.autoStart!,
                                   onChanged: (value) {
-                                    // setState(() => selected = value);
+                                    configNotifier.toggleAutoStart();
                                   },
                                 ),
                               ),
@@ -75,9 +79,9 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                                 scaleX: 0.6,
                                 scaleY: 0.6,
                                 child: MacosSwitch(
-                                  value: true,
+                                  value: config.showNotification!,
                                   onChanged: (value) {
-                                    // setState(() => selected = value);
+                                    configNotifier.toggleShowNotification();
                                   },
                                 ),
                               ),
@@ -97,9 +101,9 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                                 scaleX: 0.6,
                                 scaleY: 0.6,
                                 child: MacosSwitch(
-                                  value: true,
+                                  value: config.skipDock!,
                                   onChanged: (value) {
-                                    // setState(() => selected = value);
+                                    configNotifier.toggleSkipDock();
                                   },
                                 ),
                               ),
