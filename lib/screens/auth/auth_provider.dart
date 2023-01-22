@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter/scheduler.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:otp/otp.dart';
@@ -28,8 +29,7 @@ class TotpItem {
 }
 
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
-  final timers = [];
-  late final Timer timer;
+  late Timer _timer;
   TotpItemsNotifier() : super([]) {
     update();
   }
@@ -78,10 +78,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
   }
 
   chronometer() {
-    var d = 1;
-    var period = Duration(seconds: d);
-    timer = Timer.periodic(period, (timer) {
-      var stateX = [];
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       for (var i = 0; i < state.length; i++) {
         TotpItem totpItem = state[i];
         Totp totp = totpItem.totp;
@@ -98,23 +95,30 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
           double leftTime;
           String currentCode;
           double timeValue;
-          if (totpItem.leftTime > d) {
-            leftTime = totpItem.leftTime - d;
+          if (totpItem.leftTime > 1) {
+            leftTime = totpItem.leftTime - 1;
             currentCode = totpItem.currentCode;
           } else {
-            leftTime = totp.period! - (d - totpItem.leftTime);
+            leftTime = totp.period! - (1 - totpItem.leftTime);
             final now = DateTime.now();
             final date = timezone.TZDateTime.from(now, pacificTimeZone);
             currentCode = OTP.generateTOTPCodeString(totp.secret!, date.millisecondsSinceEpoch,
                 algorithm: algorithm, isGoogle: true);
           }
+          // Log.d(leftTime, "num");
           timeValue = (leftTime / totp.period!) * 100.0;
-          stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
+          // stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
+          // Log.d(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue) == state[i],
+          //     "ppp");
+          state[i] = TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue);
         } else {
-          stateX.add(totpItem);
+          // stateX.add(totpItem);
+          state[i] = totpItem;
         }
+        // stateX.add(totpItem);
       }
-      state = [...stateX];
+      state = [...state];
+      // timer.cancel();
     });
   }
 

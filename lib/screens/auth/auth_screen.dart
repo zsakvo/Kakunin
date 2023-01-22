@@ -5,6 +5,7 @@ import 'package:contextual_menu/contextual_menu.dart';
 import 'package:flutter/cupertino.dart' hide MenuItem;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter/scheduler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -46,12 +47,65 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   Menu? _menu;
 
   @override
+  void onTrayIconMouseDown() {
+    Log.d('onTrayIconMouseDown');
+    var totpItems = ref.read(totpItemsProvider);
+    final menuItems = totpItems
+        .map((e) => e.totp.scheme == "TOTP"
+            ? MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.leftTime.toInt().toString()}秒")
+            : MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.totp.count.toString()}次"))
+        .toList();
+    menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
+    menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
+    trayManager.setContextMenu(Menu(items: menuItems));
+    trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayIconMouseUp() {
+    Log.d('onTrayIconMouseUp');
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    Log.d('onTrayIconRightMouseDown');
+    // trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayIconRightMouseUp() {
+    Log.d('onTrayIconRightMouseUp');
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    if (menuItem.label!.contains("\t")) {
+      final arr = menuItem.label!.split("\t\t");
+      final code = arr[1];
+      final label = arr[0];
+      FlutterClipboard.copy(code).then((value) {
+        if (ref.read(configProvider).showNotification!) {
+          LocalNotification(
+            title: label,
+            body: "验证码复制成功",
+          ).show();
+        }
+      });
+    } else {
+      exit(0);
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
     trayManager.addListener(this);
     trayManager.setIcon("assets/img/tray_icon.png");
     super.initState();
     ref.read(totpItemsProvider.notifier).chronometer();
+    // final menuItems = <MenuItem>[];
+    // menuItems.insert(0, MenuItem(label: "当前验证码", disabled: false));
+    // trayManager.setContextMenu(Menu(items: menuItems));
   }
 
   @override
@@ -66,10 +120,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     final bool isEditing = ref.watch(editorProvider);
     final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
-    final menuItems = totpItems.map((e) => MenuItem(label: "${e.totp.label}\t\t\t\t${e.currentCode}")).toList();
-    menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
-    menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
-    trayManager.setContextMenu(Menu(items: menuItems));
+    // final menuItems = totpItems.map((e) => MenuItem(label: "${e.totp.label}\t\t\t\t${e.currentCode}")).toList();
+    // menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
+    // menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
+    // trayManager.setContextMenu(Menu(items: menuItems));
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
@@ -259,14 +313,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   void _onClick(MenuItem item, Totp totp) async {
     final box = Hive.box<Totp>("2fa");
-    Log.d(box.keys);
-    Log.d(item.label, "点击菜单");
     switch (item.label) {
       case "编辑":
         ref.read(pageProvider.notifier).update((state) => 1);
         break;
       case "删除":
-        Log.d("删除的uuid：${totp.uuid!}");
         await box.delete(totp.uuid);
         ref.read(totpItemsProvider.notifier).remove(totp);
         break;
@@ -291,45 +342,5 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       position: _position,
       placement: _placement,
     );
-  }
-
-  @override
-  void onTrayIconMouseDown() {
-    Log.d('onTrayIconMouseDown');
-    trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconMouseUp() {
-    Log.d('onTrayIconMouseUp');
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    Log.d('onTrayIconRightMouseDown');
-    // trayManager.popUpContextMenu();
-  }
-
-  @override
-  void onTrayIconRightMouseUp() {
-    Log.d('onTrayIconRightMouseUp');
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.label!.contains("\t")) {
-      final code = menuItem.label!.split("\t")[1];
-      final label = menuItem.label!.split("\t")[0].split("-")[1];
-      FlutterClipboard.copy(code).then((value) {
-        if (ref.read(configProvider).showNotification!) {
-          LocalNotification(
-            title: label,
-            body: "验证码复制成功",
-          ).show();
-        }
-      });
-    } else {
-      exit(0);
-    }
   }
 }

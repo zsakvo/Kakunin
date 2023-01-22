@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart' hide MenuItem;
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -10,6 +11,7 @@ import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
 import 'package:totp/screens/config/config_screen.dart';
+import 'package:totp/utils/log.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:timezone/data/latest.dart' as timezone;
@@ -62,16 +64,32 @@ class App extends StatelessWidget {
   }
 }
 
-class MainView extends ConsumerStatefulWidget {
+class MainView extends StatefulHookConsumerWidget {
   const MainView({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MainViewState();
 }
 
-class _MainViewState extends ConsumerState<MainView> {
+class _MainViewState extends ConsumerState<MainView> with WindowListener {
+  @override
+  void onWindowFocus() {
+    // Make sure to call once.
+    Log.d("focus");
+    // do something
+  }
+
+  @override
+  void onWindowBlur() {
+    Log.d("blur");
+  }
+
   @override
   Widget build(BuildContext context) {
+    useEffect(() {
+      windowManager.addListener(this);
+      return () => windowManager.removeListener(this);
+    });
     final pageIndex = ref.watch(pageProvider);
     return PlatformMenuBar(
       menus: const [
