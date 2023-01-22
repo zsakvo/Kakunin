@@ -6,9 +6,11 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:kakunin/utils/flash.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mime/mime.dart';
 import 'package:kakunin/data/entity/token.dart';
@@ -145,6 +147,13 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     "period": periodTextController.text,
                   });
               var box = Hive.box<Token>("2fa");
+              if (labelTextController.text.isEmpty) {
+                showErrorToast(context, "名称为必填项目");
+                return;
+              } else if (secrectTextController.text.isEmpty) {
+                showErrorToast(context, "密钥为必填项目");
+                return;
+              }
               Token t = Token(
                   scheme: ref.read(editItemProvider).scheme,
                   label: labelTextController.text,
@@ -245,6 +254,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         ),
                         Flexible(
                             child: MacosTextField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z]")),
+                          ],
                           controller: secrectTextController,
                           placeholder: '密钥',
                         ))
@@ -311,6 +323,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                               ),
                               Flexible(
                                   child: MacosTextField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly, //数字，只能是整数
+                                ],
                                 controller: periodTextController,
                                 placeholder: '时间间隔',
                               ))
@@ -328,6 +344,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                               ),
                               Flexible(
                                   child: MacosTextField(
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly, //数字，只能是整数
+                                ],
                                 controller: countTextController,
                                 placeholder: '设定计数器',
                               ))
@@ -345,6 +365,10 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         ),
                         Flexible(
                             child: MacosTextField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly, //数字，只能是整数
+                          ],
                           controller: digitsTextController,
                           placeholder: '位数',
                         ))
