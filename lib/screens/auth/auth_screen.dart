@@ -91,6 +91,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
           ).show();
         }
       });
+      if (menuItem.label!.contains("次")) {
+        ref
+            .read(totpItemsProvider.notifier)
+            .updateHotp(ref.read(totpItemsProvider).firstWhere((element) => element.currentCode == code));
+      }
     } else {
       exit(0);
     }
