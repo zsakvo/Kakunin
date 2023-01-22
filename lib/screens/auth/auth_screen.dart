@@ -150,7 +150,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         icon: const MacosIcon(CupertinoIcons.bandage),
                         showLabel: false,
                         onPressed: () {
-                          ref.read(editItemProvider.notifier).update((state) => null);
+                          ref.read(editItemProvider.notifier).setBlank();
                           ref.read(pageProvider.notifier).update((state) => 1);
                         }),
                     // const ToolBarIconButton(label: "编辑模式", icon: MacosIcon(CupertinoIcons.chevron_left_slash_chevron_right), showLabel: false),
@@ -202,7 +202,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                             onPointerUp: (event) {
                               if (!_shouldReact) return;
 
-                              ref.read(editItemProvider.notifier).update((state) => token);
+                              ref.read(editItemProvider.notifier).setState(token);
 
                               _position = Offset(
                                 event.position.dx,
@@ -283,14 +283,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                               ),
                               onTap: () {
                                 if (isEditing) {
-                                  ref.read(editItemProvider.notifier).update((state) => token);
+                                  ref.read(editItemProvider.notifier).setState(token);
                                 } else {
                                   FlutterClipboard.copy(item.currentCode)
                                       .then((value) => showSuccessToast(context, "验证码拷贝成功"));
                                 }
                               },
                               onLongPress: () {
-                                ref.read(editItemProvider.notifier).update((state) => token);
+                                ref.read(editItemProvider.notifier).setState(token);
                                 ref.read(editorProvider.notifier).update((state) => true);
                               },
                             ));

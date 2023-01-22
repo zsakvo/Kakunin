@@ -28,11 +28,16 @@ class CodeScreen extends StatefulHookConsumerWidget {
 
 class _CodeScreenState extends ConsumerState<CodeScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var uuid = const Uuid();
     var uuidVal = useState<String?>(null);
-    final Token token = ref.watch(codeEditorProvider);
-    final Token? editItem = ref.watch(editItemProvider);
+    // final Token token = ref.watch(codeEditorProvider);
+    final Token editItem = ref.watch(editItemProvider);
     final isDragging = ref.watch(dragProvider);
     final uriTextController = useTextEditingController();
     final issuerTextController = useTextEditingController();
@@ -66,13 +71,13 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
         if (!["TOTP", "HOTP"].contains(scheme)) {
           Log.d("当前类型不被支持");
         } else {
-          ref.read(codeEditorProvider.notifier).setScheme(scheme);
+          ref.read(editItemProvider.notifier).setScheme(scheme);
         }
       }
       if (!["SHA1", "SHA256", "SHA512"].contains(algorithm)) {
         Log.d("当前算法不被支持");
       } else {
-        ref.read(codeEditorProvider.notifier).setAlgorithm(algorithm);
+        ref.read(editItemProvider.notifier).setAlgorithm(algorithm);
       }
     }
 
@@ -85,15 +90,15 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     digitsListenr() => tokenItemTextValueListener("digits", digitsTextController.text);
 
     useEffect(() {
-      if (editItem != null) {
+      if (editItem.uuid != null) {
         uriTextController.text = editItem.otpauth ?? "";
         issuerTextController.text = editItem.issuer ?? "";
         labelTextController.text = editItem.label ?? "";
         secrectTextController.text = editItem.secret ?? "";
         periodTextController.text = editItem.period.toString();
         digitsTextController.text = editItem.digits.toString();
+        countTextController.text = editItem.count.toString();
         uuidVal.value = editItem.uuid!;
-        Log.d("当前uuid：$uuidVal");
       } else {
         uuidVal.value = uuid.v4();
         uriTextController.text = "";
@@ -120,7 +125,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
 
     return MacosScaffold(
       toolBar: ToolBar(
-        title: Text(editItem == null ? "新增凭证" : "编辑凭证"),
+        title: Text(editItem.uuid == null ? "新增凭证" : "编辑凭证"),
         actions: [
           ToolBarIconButton(
             label: "保存",
@@ -130,22 +135,22 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
               // print("click");
               var uri = Uri(
                   scheme: "otpauth",
-                  host: ref.read(codeEditorProvider).scheme,
+                  host: ref.read(editItemProvider).scheme,
                   path: labelTextController.text,
                   queryParameters: {
                     "secrect": secrectTextController.text,
                     "issuer": issuerTextController.text,
-                    "algorithm": ref.read(codeEditorProvider).algorithm,
+                    "algorithm": ref.read(editItemProvider).algorithm,
                     "digits": digitsTextController.text,
                     "period": periodTextController.text,
                   });
               var box = Hive.box<Token>("2fa");
               Token t = Token(
-                  scheme: ref.read(codeEditorProvider).scheme,
+                  scheme: ref.read(editItemProvider).scheme,
                   label: labelTextController.text,
                   issuer: issuerTextController.text,
                   secret: secrectTextController.text,
-                  algorithm: token.algorithm,
+                  algorithm: editItem.algorithm,
                   otpauth: uri.toString(),
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
@@ -260,9 +265,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: token.scheme,
+                        value: editItem.scheme,
                         onChanged: (String? newValue) {
-                          ref.read(codeEditorProvider.notifier).setScheme(newValue!);
+                          ref.read(editItemProvider.notifier).setScheme(newValue!);
                         },
                         items: <String>[
                           'TOTP',
@@ -280,9 +285,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: token.algorithm,
+                        value: editItem.algorithm,
                         onChanged: (String? newValue) {
-                          ref.read(codeEditorProvider.notifier).setAlgorithm(newValue!);
+                          ref.read(editItemProvider.notifier).setAlgorithm(newValue!);
                         },
                         items: <String>['SHA1', 'SHA256', 'SHA512'].map<MacosPopupMenuItem<String>>((String value) {
                           return MacosPopupMenuItem<String>(
@@ -294,7 +299,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       const Spacer(),
                     ]),
                   ),
-                  token.scheme == "TOTP"
+                  editItem.scheme == "TOTP"
                       ? Container(
                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           // color: Colors.amber,
