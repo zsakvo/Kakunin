@@ -12,8 +12,11 @@ import 'package:totp/screens/code/code_screen.dart';
 import 'package:totp/screens/config/config_screen.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:timezone/data/latest.dart' as timezone;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  timezone.initializeTimeZones();
   await Hive.initFlutter();
   Hive.registerAdapter(ConfigAdapter());
   Hive.registerAdapter(TotpAdapter());

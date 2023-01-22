@@ -6,6 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:otp/otp.dart';
 import 'package:totp/data/entity/totp.dart';
 
+import 'package:timezone/timezone.dart' as timezone;
+import 'package:totp/utils/log.dart';
+
+final pacificTimeZone = timezone.getLocation('America/Los_Angeles');
+
 class TotpItem {
   Totp totp;
   final AnimationController? controller;
@@ -49,12 +54,12 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
       } else if (totp.algorithm == "SHA512") {
         algorithm = algorithm = Algorithm.SHA512;
       }
-      final ts = DateTime.now().millisecondsSinceEpoch;
-      final code = OTP.generateTOTPCodeString(
-        totpItem.totp.secret!,
-        ts,
-        algorithm: algorithm,
-      );
+
+      final now = DateTime.now();
+      final date = timezone.TZDateTime.from(now, pacificTimeZone);
+      // Log.d({"secrect": totpItem.totp.secret, "time": date.millisecondsSinceEpoch, "algorithm": algorithm});
+      final code = OTP.generateTOTPCodeString(totpItem.totp.secret!, date.millisecondsSinceEpoch,
+          algorithm: algorithm, isGoogle: true);
       final leftTime = OTP.remainingSeconds(interval: totp.period!) * 1.0;
       final timeValue = 100.0 * (leftTime / totp.period!);
       return TotpItem(totp: totp, currentCode: code, leftTime: leftTime, timeValue: timeValue);
@@ -73,7 +78,6 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
       for (var i = 0; i < state.length; i++) {
         TotpItem totpItem = state[i];
         Totp totp = totpItem.totp;
-        final ts = DateTime.now().millisecondsSinceEpoch;
         late Algorithm algorithm;
         if (totp.algorithm == "SHA1") {
           algorithm = Algorithm.SHA1;
@@ -91,7 +95,10 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
           currentCode = totpItem.currentCode;
         } else {
           leftTime = totp.period! - (d - totpItem.leftTime);
-          currentCode = OTP.generateTOTPCodeString(totp.secret!, ts, algorithm: algorithm);
+          final now = DateTime.now();
+          final date = timezone.TZDateTime.from(now, pacificTimeZone);
+          currentCode = OTP.generateTOTPCodeString(totp.secret!, date.millisecondsSinceEpoch,
+              algorithm: algorithm, isGoogle: true);
         }
         timeValue = (leftTime / totp.period!) * 100.0;
         stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
