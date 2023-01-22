@@ -10,6 +10,7 @@ import 'package:timezone/timezone.dart' as timezone;
 import 'package:totp/utils/log.dart';
 
 final pacificTimeZone = timezone.getLocation('America/Los_Angeles');
+final box = Hive.box<Totp>("2fa");
 
 class TotpItem {
   Totp totp;
@@ -64,7 +65,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
         code = OTP.generateTOTPCodeString(totpItem.totp.secret!, date.millisecondsSinceEpoch,
             algorithm: algorithm, isGoogle: true);
       } else {
-        code = OTP.generateHOTPCodeString(totpItem.totp.secret!, totpItem.totp.count ?? 0);
+        code = OTP.generateHOTPCodeString(totpItem.totp.secret!, totpItem.totp.count!, isGoogle: true);
       }
       final leftTime = OTP.remainingSeconds(interval: totp.period!) * 1.0;
       final timeValue = 100.0 * (leftTime / totp.period!);
@@ -84,33 +85,46 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
       for (var i = 0; i < state.length; i++) {
         TotpItem totpItem = state[i];
         Totp totp = totpItem.totp;
-        late Algorithm algorithm;
-        if (totp.algorithm == "SHA1") {
-          algorithm = Algorithm.SHA1;
-        } else if (totp.algorithm == "SHA256") {
-          algorithm = Algorithm.SHA256;
-        } else if (totp.algorithm == "SHA512") {
-          algorithm = algorithm = Algorithm.SHA512;
-        }
-        // final num = 100 * 1 / totp.period!;
-        double leftTime;
-        String currentCode;
-        double timeValue;
-        if (totpItem.leftTime > d) {
-          leftTime = totpItem.leftTime - d;
-          currentCode = totpItem.currentCode;
+        if (totp.scheme == "TOTP") {
+          late Algorithm algorithm;
+          if (totp.algorithm == "SHA1") {
+            algorithm = Algorithm.SHA1;
+          } else if (totp.algorithm == "SHA256") {
+            algorithm = Algorithm.SHA256;
+          } else if (totp.algorithm == "SHA512") {
+            algorithm = algorithm = Algorithm.SHA512;
+          }
+          // final num = 100 * 1 / totp.period!;
+          double leftTime;
+          String currentCode;
+          double timeValue;
+          if (totpItem.leftTime > d) {
+            leftTime = totpItem.leftTime - d;
+            currentCode = totpItem.currentCode;
+          } else {
+            leftTime = totp.period! - (d - totpItem.leftTime);
+            final now = DateTime.now();
+            final date = timezone.TZDateTime.from(now, pacificTimeZone);
+            currentCode = OTP.generateTOTPCodeString(totp.secret!, date.millisecondsSinceEpoch,
+                algorithm: algorithm, isGoogle: true);
+          }
+          timeValue = (leftTime / totp.period!) * 100.0;
+          stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
         } else {
-          leftTime = totp.period! - (d - totpItem.leftTime);
-          final now = DateTime.now();
-          final date = timezone.TZDateTime.from(now, pacificTimeZone);
-          currentCode = OTP.generateTOTPCodeString(totp.secret!, date.millisecondsSinceEpoch,
-              algorithm: algorithm, isGoogle: true);
+          stateX.add(totpItem);
         }
-        timeValue = (leftTime / totp.period!) * 100.0;
-        stateX.add(TotpItem(totp: totp, leftTime: leftTime, currentCode: currentCode, timeValue: timeValue));
       }
       state = [...stateX];
     });
+  }
+
+  updateHotp(TotpItem item) {
+    int index = state.indexOf(item);
+    var code = OTP.generateHOTPCodeString(item.totp.secret!, item.totp.count! + 1, isGoogle: true);
+    var totp = item.totp.copyWith(count: item.totp.count! + 1);
+    var newItem = TotpItem(totp: totp, currentCode: code);
+    state[index] = newItem;
+    box.put(item.totp.uuid, totp);
   }
 }
 

@@ -159,7 +159,8 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   otpauth: uri.toString(),
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
-                  uuid: uuidVal.value);
+                  uuid: uuidVal.value,
+                  count: int.tryParse(countTextController.text));
 
               box.put(uuidVal.value, t);
               ref.read(totpItemsProvider.notifier).update();
@@ -309,40 +310,41 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       const Spacer(),
                     ]),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    // color: Colors.amber,
-                    child: Row(
-                      children: [
-                        const Text("时间"),
-                        const SizedBox(
-                          width: 14,
+                  totp.scheme == "TOTP"
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          // color: Colors.amber,
+                          child: Row(
+                            children: [
+                              const Text("时间"),
+                              const SizedBox(
+                                width: 14,
+                              ),
+                              Flexible(
+                                  child: MacosTextField(
+                                controller: periodTextController,
+                                placeholder: '时间间隔',
+                              ))
+                            ],
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          // color: Colors.amber,
+                          child: Row(
+                            children: [
+                              const Text("计数器"),
+                              const SizedBox(
+                                width: 14,
+                              ),
+                              Flexible(
+                                  child: MacosTextField(
+                                controller: countTextController,
+                                placeholder: '设定计数器',
+                              ))
+                            ],
+                          ),
                         ),
-                        Flexible(
-                            child: MacosTextField(
-                          controller: periodTextController,
-                          placeholder: '时间间隔',
-                        ))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    // color: Colors.amber,
-                    child: Row(
-                      children: [
-                        const Text("计数器"),
-                        const SizedBox(
-                          width: 14,
-                        ),
-                        Flexible(
-                            child: MacosTextField(
-                          controller: countTextController,
-                          placeholder: '设定计数器',
-                        ))
-                      ],
-                    ),
-                  ),
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     // color: Colors.amber,

@@ -66,10 +66,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     final bool isEditing = ref.watch(editorProvider);
     final Totp? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
-    final menuItems = totpItems
-        .map((e) =>
-            MenuItem(label: "${e.totp.issuer != null ? ("${e.totp.issuer!}-") : ""}${e.totp.label}\t${e.currentCode}"))
-        .toList();
+    final menuItems = totpItems.map((e) => MenuItem(label: "${e.totp.label}\t\t\t\t${e.currentCode}")).toList();
     menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
     menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
     trayManager.setContextMenu(Menu(items: menuItems));
@@ -169,17 +166,25 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            children: [
-                                              Text(
-                                                totp.issuer ?? "",
-                                                style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
-                                              ),
-                                              Text(
-                                                " (${totp.label!})",
-                                                style: const TextStyle(
-                                                    fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
-                                              )
-                                            ],
+                                            children: totp.issuer!.isNotEmpty
+                                                ? [
+                                                    Text(
+                                                      totp.issuer!,
+                                                      style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
+                                                    ),
+                                                    Text(
+                                                      " (${totp.label!})",
+                                                      style: const TextStyle(
+                                                          fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                                    )
+                                                  ]
+                                                : [
+                                                    Text(
+                                                      totp.label!,
+                                                      style: const TextStyle(
+                                                          fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
+                                                    )
+                                                  ],
                                           ),
                                           const SizedBox(
                                             height: 8,
@@ -195,11 +200,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                       ),
                                       const Spacer(),
                                       // AnimatedLiquidCircularProgressIndicator(),
-                                      ProgressCircle(
-                                        value: item.timeValue,
-                                        innerColor: Colors.blue,
-                                        radius: 11,
-                                      ),
+                                      totp.scheme == "TOTP"
+                                          ? ProgressCircle(
+                                              value: item.timeValue,
+                                              innerColor: Colors.blue,
+                                              radius: 11,
+                                            )
+                                          : GestureDetector(
+                                              child: Transform.translate(
+                                                offset: const Offset(14.0, 0),
+                                                child: Container(
+                                                    color: Colors.transparent,
+                                                    padding: const EdgeInsets.all(14),
+                                                    child: const MacosIcon(CupertinoIcons.arrow_clockwise)),
+                                              ),
+                                              onTap: () {
+                                                ref.read(totpItemsProvider.notifier).updateHotp(item);
+                                              },
+                                            ),
                                     ],
                                   ),
                                 ),
