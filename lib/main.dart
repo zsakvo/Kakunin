@@ -121,39 +121,3 @@ class _MainViewState extends ConsumerState<MainView> with WindowListener {
     );
   }
 }
-
-// class MainView extends StatefulWidget {
-//   const MainView({super.key});
-
-//   @override
-//   State<MainView> createState() => _MainViewState();
-// }
-
-// class _MainViewState extends State<MainView> {
-//   // int _pageIndex = 0;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return PlatformMenuBar(
-//       menus: const [
-//         PlatformMenu(
-//           label: 'Totp',
-//           menus: [
-//             PlatformProvidedMenuItem(
-//               type: PlatformProvidedMenuItemType.about,
-//             ),
-//             PlatformProvidedMenuItem(
-//               type: PlatformProvidedMenuItemType.quit,
-//             ),
-//           ],
-//         ),
-//       ],
-//       child: MacosWindow(
-//         child: IndexedStack(
-//           index: _pageIndex,
-//           children: const [AuthScreen(), CodeScreen()],
-//         ),
-//       ),
-//     );
-//   }
-// }

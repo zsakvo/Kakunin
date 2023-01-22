@@ -134,7 +134,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                           var box = Hive.box<Token>("2fa");
                           await box.clear();
                           showSuccessToast(context, "数据清除完毕");
-                          ref.read(totpItemsProvider.notifier).update();
+                          ref.read(tokenItemsProvider.notifier).update();
                         },
                       ),
                       const Divider(),

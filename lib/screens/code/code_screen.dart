@@ -31,7 +31,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   Widget build(BuildContext context) {
     var uuid = const Uuid();
     var uuidVal = useState<String?>(null);
-    final Token totp = ref.watch(codeEditorProvider);
+    final Token token = ref.watch(codeEditorProvider);
     final Token? editItem = ref.watch(editItemProvider);
     final isDragging = ref.watch(dragProvider);
     final uriTextController = useTextEditingController();
@@ -41,9 +41,6 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     final periodTextController = useTextEditingController(text: "30");
     final digitsTextController = useTextEditingController(text: "6");
     final countTextController = useTextEditingController(text: "0");
-
-    // periodTextController.text = totp.period.toString();
-    // digitsTextController.text = totp.digits.toString();
 
     uriValueListener() {
       final uriText = uriTextController.text;
@@ -79,20 +76,13 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
       }
     }
 
-    totpItemTextValueListener(String key, String value) {
-      // Log.d(value, key);
-      // Uri uri = Uri(scheme: "otpauth", host: totp.scheme, queryParameters: {key: value});
-      // Uri uri = Uri.parse(uriTextController.text);
-      // uri.replace(scheme: totp.scheme).replace(host: totp.scheme);
-      // uri = uri.replace(queryParameters: {...uri.queryParameters, key: value}, scheme: "otpauth", host: totp.scheme);
-      // uriTextController.text = uri.toString();
-    }
+    tokenItemTextValueListener(String key, String value) {}
 
-    issuerListener() => totpItemTextValueListener("issuer", issuerTextController.text);
-    labelListener() => totpItemTextValueListener("label", labelTextController.text);
-    secrectListener() => totpItemTextValueListener("secrect", secrectTextController.text);
-    periodListener() => totpItemTextValueListener("period", periodTextController.text);
-    digitsListenr() => totpItemTextValueListener("digits", digitsTextController.text);
+    issuerListener() => tokenItemTextValueListener("issuer", issuerTextController.text);
+    labelListener() => tokenItemTextValueListener("label", labelTextController.text);
+    secrectListener() => tokenItemTextValueListener("secrect", secrectTextController.text);
+    periodListener() => tokenItemTextValueListener("period", periodTextController.text);
+    digitsListenr() => tokenItemTextValueListener("digits", digitsTextController.text);
 
     useEffect(() {
       if (editItem != null) {
@@ -155,7 +145,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   label: labelTextController.text,
                   issuer: issuerTextController.text,
                   secret: secrectTextController.text,
-                  algorithm: totp.algorithm,
+                  algorithm: token.algorithm,
                   otpauth: uri.toString(),
                   period: int.parse(periodTextController.text),
                   digits: int.parse(digitsTextController.text),
@@ -163,7 +153,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   count: int.tryParse(countTextController.text));
 
               box.put(uuidVal.value, t);
-              ref.read(totpItemsProvider.notifier).update();
+              ref.read(tokenItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
             },
           )
@@ -270,12 +260,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: totp.scheme,
+                        value: token.scheme,
                         onChanged: (String? newValue) {
                           ref.read(codeEditorProvider.notifier).setScheme(newValue!);
-                          // setState(() {
-                          //   totpItem.setTotp(totpItem.totp.copyWith(scheme: newValue));
-                          // });
                         },
                         items: <String>[
                           'TOTP',
@@ -293,12 +280,9 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                         width: 14,
                       ),
                       MacosPopupButton<String>(
-                        value: totp.algorithm,
+                        value: token.algorithm,
                         onChanged: (String? newValue) {
                           ref.read(codeEditorProvider.notifier).setAlgorithm(newValue!);
-                          // setState(() {
-                          //   totpItem.setTotp(totpItem.totp.copyWith(algorithm: newValue));
-                          // });
                         },
                         items: <String>['SHA1', 'SHA256', 'SHA512'].map<MacosPopupMenuItem<String>>((String value) {
                           return MacosPopupMenuItem<String>(
@@ -310,7 +294,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                       const Spacer(),
                     ]),
                   ),
-                  totp.scheme == "TOTP"
+                  token.scheme == "TOTP"
                       ? Container(
                           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           // color: Colors.amber,

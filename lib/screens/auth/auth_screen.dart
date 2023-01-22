@@ -50,11 +50,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
   @override
   void onTrayIconMouseDown() {
     Log.d('onTrayIconMouseDown');
-    var totpItems = ref.read(totpItemsProvider);
-    final menuItems = totpItems
-        .map((e) => e.totp.scheme == "TOTP"
-            ? MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.leftTime.toInt().toString()}秒")
-            : MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.totp.count.toString()}次"))
+    var tokenItems = ref.read(tokenItemsProvider);
+    final menuItems = tokenItems
+        .map((e) => e.token.scheme == "TOTP"
+            ? MenuItem(label: "${e.token.label}\t\t${e.currentCode}\t\t${e.leftTime.toInt().toString()}秒")
+            : MenuItem(label: "${e.token.label}\t\t${e.currentCode}\t\t${e.token.count.toString()}次"))
         .toList();
     menuItems.addAll([MenuItem.separator(), MenuItem(label: "界面"), MenuItem(label: "退出")]);
     menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
@@ -95,8 +95,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       });
       if (menuItem.label!.contains("次")) {
         ref
-            .read(totpItemsProvider.notifier)
-            .updateHotp(ref.read(totpItemsProvider).firstWhere((element) => element.currentCode == code));
+            .read(tokenItemsProvider.notifier)
+            .updateHotp(ref.read(tokenItemsProvider).firstWhere((element) => element.currentCode == code));
       }
     } else if (label.contains("界面")) {
       windowManager.show();
@@ -111,7 +111,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     trayManager.addListener(this);
     trayManager.setIcon("assets/img/tray_icon.png");
     super.initState();
-    ref.read(totpItemsProvider.notifier).chronometer();
+    ref.read(tokenItemsProvider.notifier).chronometer();
     // final menuItems = <MenuItem>[];
     // menuItems.insert(0, MenuItem(label: "当前验证码", disabled: false));
     // trayManager.setContextMenu(Menu(items: menuItems));
@@ -128,11 +128,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     final box = Hive.box<Token>("2fa");
     final bool isEditing = ref.watch(editorProvider);
     final Token? editItem = ref.watch(editItemProvider);
-    final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
-    // final menuItems = totpItems.map((e) => MenuItem(label: "${e.totp.label}\t\t\t\t${e.currentCode}")).toList();
-    // menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
-    // menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
-    // trayManager.setContextMenu(Menu(items: menuItems));
+    final List<TokenItem> tokenItems = ref.watch(tokenItemsProvider);
     return ContentArea(
       builder: (context, scrollController) {
         return MacosScaffold(
@@ -185,7 +181,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         onPressed: () async {
                           ref.read(editorProvider.notifier).update((state) => false);
                           await box.delete(editItem!.uuid);
-                          ref.read(totpItemsProvider.notifier).update();
+                          ref.read(tokenItemsProvider.notifier).update();
                         })
                   ],
           ),
@@ -196,8 +192,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: ListView.separated(
                       itemBuilder: (context, index) {
-                        final item = totpItems[index];
-                        final Token totp = item.totp;
+                        final item = tokenItems[index];
+                        final Token token = item.token;
                         return Listener(
                             onPointerDown: (event) {
                               _shouldReact =
@@ -206,19 +202,19 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                             onPointerUp: (event) {
                               if (!_shouldReact) return;
 
-                              ref.read(editItemProvider.notifier).update((state) => totp);
+                              ref.read(editItemProvider.notifier).update((state) => token);
 
                               _position = Offset(
                                 event.position.dx,
                                 event.position.dy,
                               );
 
-                              _handleClickPopUp(totp);
+                              _handleClickPopUp(token);
                             },
                             child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               child: Container(
-                                color: isEditing && editItem == totp ? Colors.blue[50] : Colors.transparent,
+                                color: isEditing && editItem == token ? Colors.blue[50] : Colors.transparent,
                                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -229,21 +225,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
-                                            children: totp.issuer!.isNotEmpty
+                                            children: token.issuer!.isNotEmpty
                                                 ? [
                                                     Text(
-                                                      totp.issuer!,
+                                                      token.issuer!,
                                                       style: const TextStyle(fontSize: 16, fontFamily: "Monaco"),
                                                     ),
                                                     Text(
-                                                      " (${totp.label!})",
+                                                      " (${token.label!})",
                                                       style: const TextStyle(
                                                           fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
                                                     )
                                                   ]
                                                 : [
                                                     Text(
-                                                      totp.label!,
+                                                      token.label!,
                                                       style: const TextStyle(
                                                           fontSize: 15, fontFamily: "Monaco", color: Color(0xFF919191)),
                                                     )
@@ -263,7 +259,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                       ),
                                       const Spacer(),
                                       // AnimatedLiquidCircularProgressIndicator(),
-                                      totp.scheme == "TOTP"
+                                      token.scheme == "TOTP"
                                           ? ProgressCircle(
                                               value: item.timeValue,
                                               innerColor: Colors.blue,
@@ -278,7 +274,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                                     child: const MacosIcon(CupertinoIcons.arrow_clockwise)),
                                               ),
                                               onTap: () {
-                                                ref.read(totpItemsProvider.notifier).updateHotp(item);
+                                                ref.read(tokenItemsProvider.notifier).updateHotp(item);
                                               },
                                             ),
                                     ],
@@ -287,14 +283,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                               ),
                               onTap: () {
                                 if (isEditing) {
-                                  ref.read(editItemProvider.notifier).update((state) => totp);
+                                  ref.read(editItemProvider.notifier).update((state) => token);
                                 } else {
                                   FlutterClipboard.copy(item.currentCode)
                                       .then((value) => showSuccessToast(context, "验证码拷贝成功"));
                                 }
                               },
                               onLongPress: () {
-                                ref.read(editItemProvider.notifier).update((state) => totp);
+                                ref.read(editItemProvider.notifier).update((state) => token);
                                 ref.read(editorProvider.notifier).update((state) => true);
                               },
                             ));
@@ -310,7 +306,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                           ),
                         );
                       },
-                      itemCount: totpItems.length),
+                      itemCount: tokenItems.length),
                 );
               },
             ),
@@ -320,29 +316,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     );
   }
 
-  void _onClick(MenuItem item, Token totp) async {
+  void _onClick(MenuItem item, Token token) async {
     final box = Hive.box<Token>("2fa");
     switch (item.label) {
       case "编辑":
         ref.read(pageProvider.notifier).update((state) => 1);
         break;
       case "删除":
-        await box.delete(totp.uuid);
-        ref.read(totpItemsProvider.notifier).remove(totp);
+        await box.delete(token.uuid);
+        ref.read(tokenItemsProvider.notifier).remove(token);
         break;
     }
   }
 
-  void _handleClickPopUp(Token totp) {
+  void _handleClickPopUp(Token token) {
     _menu ??= Menu(
       items: [
         MenuItem(
           label: '编辑',
-          onClick: (MenuItem menuItem) => _onClick(menuItem, totp),
+          onClick: (MenuItem menuItem) => _onClick(menuItem, token),
         ),
         MenuItem(
           label: '删除',
-          onClick: (MenuItem menuItem) => _onClick(menuItem, totp),
+          onClick: (MenuItem menuItem) => _onClick(menuItem, token),
         ),
       ],
     );
