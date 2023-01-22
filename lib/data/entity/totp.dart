@@ -25,6 +25,8 @@ class Totp extends Equatable {
   final int? period;
   @HiveField(8)
   final String? uuid;
+  @HiveField(9)
+  final int? count;
 
   const Totp(
       {this.secret,
@@ -35,7 +37,8 @@ class Totp extends Equatable {
       this.scheme,
       this.digits,
       this.period,
-      this.uuid});
+      this.uuid,
+      this.count});
 
   factory Totp.fromMap(Map<String, dynamic> data) => Totp(
       secret: data['secret'] as String?,
@@ -46,7 +49,8 @@ class Totp extends Equatable {
       scheme: data['scheme'] as String?,
       digits: data['digits'] as int?,
       period: data['period'] as int?,
-      uuid: data['uuid'] as String?);
+      uuid: data['uuid'] as String?,
+      count: data["count"] as int?);
 
   Map<String, dynamic> toMap() => {
         'secret': secret,
@@ -57,7 +61,8 @@ class Totp extends Equatable {
         'scheme': scheme,
         'digits': digits,
         'period': period,
-        'uuid': uuid
+        'uuid': uuid,
+        'count': count
       };
 
   /// `dart:convert`
@@ -81,7 +86,8 @@ class Totp extends Equatable {
       String? scheme,
       int? digits,
       int? period,
-      String? uuid}) {
+      String? uuid,
+      int? count}) {
     return Totp(
         secret: secret ?? this.secret,
         label: label ?? this.label,
@@ -91,7 +97,8 @@ class Totp extends Equatable {
         scheme: scheme ?? this.scheme,
         digits: digits ?? this.digits,
         period: period ?? this.period,
-        uuid: uuid ?? this.uuid);
+        uuid: uuid ?? this.uuid,
+        count: count ?? this.count);
   }
 
   @override
@@ -99,16 +106,6 @@ class Totp extends Equatable {
 
   @override
   List<Object?> get props {
-    return [
-      secret,
-      label,
-      issuer,
-      otpauth,
-      algorithm,
-      scheme,
-      digits,
-      period,
-      uuid
-    ];
+    return [secret, label, issuer, otpauth, algorithm, scheme, digits, period, uuid, count];
   }
 }

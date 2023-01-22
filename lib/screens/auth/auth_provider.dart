@@ -58,8 +58,14 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
       final now = DateTime.now();
       final date = timezone.TZDateTime.from(now, pacificTimeZone);
       // Log.d({"secrect": totpItem.totp.secret, "time": date.millisecondsSinceEpoch, "algorithm": algorithm});
-      final code = OTP.generateTOTPCodeString(totpItem.totp.secret!, date.millisecondsSinceEpoch,
-          algorithm: algorithm, isGoogle: true);
+
+      late final String code;
+      if (totp.scheme == "TOTP") {
+        code = OTP.generateTOTPCodeString(totpItem.totp.secret!, date.millisecondsSinceEpoch,
+            algorithm: algorithm, isGoogle: true);
+      } else {
+        code = OTP.generateHOTPCodeString(totpItem.totp.secret!, totpItem.totp.count ?? 0);
+      }
       final leftTime = OTP.remainingSeconds(interval: totp.period!) * 1.0;
       final timeValue = 100.0 * (leftTime / totp.period!);
       return TotpItem(totp: totp, currentCode: code, leftTime: leftTime, timeValue: timeValue);

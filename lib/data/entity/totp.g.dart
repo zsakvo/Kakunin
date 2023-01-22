@@ -26,13 +26,14 @@ class TotpAdapter extends TypeAdapter<Totp> {
       digits: fields[6] as int?,
       period: fields[7] as int?,
       uuid: fields[8] as String?,
+      count: fields[9] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Totp obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.secret)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class TotpAdapter extends TypeAdapter<Totp> {
       ..writeByte(7)
       ..write(obj.period)
       ..writeByte(8)
-      ..write(obj.uuid);
+      ..write(obj.uuid)
+      ..writeByte(9)
+      ..write(obj.count);
   }
 
   @override

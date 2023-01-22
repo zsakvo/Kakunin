@@ -40,6 +40,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
     final secrectTextController = useTextEditingController();
     final periodTextController = useTextEditingController(text: "30");
     final digitsTextController = useTextEditingController(text: "6");
+    final countTextController = useTextEditingController(text: "0");
 
     // periodTextController.text = totp.period.toString();
     // digitsTextController.text = totp.digits.toString();
@@ -150,7 +151,7 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   });
               var box = Hive.box<Totp>("2fa");
               Totp t = Totp(
-                  scheme: "otpauth",
+                  scheme: ref.read(codeEditorProvider).scheme,
                   label: labelTextController.text,
                   issuer: issuerTextController.text,
                   secret: secrectTextController.text,
@@ -160,7 +161,6 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                   digits: int.parse(digitsTextController.text),
                   uuid: uuidVal.value);
 
-              Log.d("当前uuidX：${uuidVal.value}");
               box.put(uuidVal.value, t);
               ref.read(totpItemsProvider.notifier).update();
               ref.read(pageProvider.notifier).update((state) => 0);
@@ -322,6 +322,23 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                             child: MacosTextField(
                           controller: periodTextController,
                           placeholder: '时间间隔',
+                        ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    // color: Colors.amber,
+                    child: Row(
+                      children: [
+                        const Text("计数器"),
+                        const SizedBox(
+                          width: 14,
+                        ),
+                        Flexible(
+                            child: MacosTextField(
+                          controller: countTextController,
+                          placeholder: '设定计数器',
                         ))
                       ],
                     ),
