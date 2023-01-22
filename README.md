@@ -1,3 +1,7 @@
+<p align="center" style="margin:32px 0;"> 
+  <img width="140"  src="https://user-images.githubusercontent.com/25399519/213915074-9bed000c-62de-4122-9794-1360b479c833.png">
+</p>
+
 # Kakunin
 
 [![GitHub (pre-)release](https://img.shields.io/github/v/release/zsakvo/Kakunin.svg?include_prereleases&style=flat-square)](https://github.com/zsakvo/Kakunin/releases)  
@@ -9,7 +13,7 @@ English | [简体中文](./README-ZH.md)
 
 ---
 
-<center align="left"><img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914134-0c5a3fb5-f37a-484a-bb4f-2cd64e84de76.png"><img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914162-15849193-7c68-44db-bd42-cfe75d71b2e6.png"></center>
+<center align="left"><img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914134-0c5a3fb5-f37a-484a-bb4f-2cd64e84de76.png"> <img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914162-15849193-7c68-44db-bd42-cfe75d71b2e6.png"></center>
 
 ## Platform Support
 
