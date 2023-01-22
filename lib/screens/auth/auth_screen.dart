@@ -11,12 +11,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:totp/data/entity/token.dart';
-import 'package:totp/main_provider.dart';
-import 'package:totp/screens/auth/auth_provider.dart';
-import 'package:totp/screens/config/config_provider.dart';
-import 'package:totp/utils/flash.dart';
-import 'package:totp/utils/log.dart';
+import 'package:kakunin/data/entity/token.dart';
+import 'package:kakunin/main_provider.dart';
+import 'package:kakunin/screens/auth/auth_provider.dart';
+import 'package:kakunin/screens/config/config_provider.dart';
+import 'package:kakunin/utils/flash.dart';
+import 'package:kakunin/utils/log.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 

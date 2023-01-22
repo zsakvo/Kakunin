@@ -11,12 +11,12 @@ import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mime/mime.dart';
-import 'package:totp/data/entity/token.dart';
-import 'package:totp/main_provider.dart';
-import 'package:totp/screens/auth/auth_provider.dart';
-import 'package:totp/screens/code/code_provider.dart';
-import 'package:totp/utils/log.dart';
-import 'package:totp/utils/qr.dart';
+import 'package:kakunin/data/entity/token.dart';
+import 'package:kakunin/main_provider.dart';
+import 'package:kakunin/screens/auth/auth_provider.dart';
+import 'package:kakunin/screens/code/code_provider.dart';
+import 'package:kakunin/utils/log.dart';
+import 'package:kakunin/utils/qr.dart';
 import 'package:uuid/uuid.dart';
 
 class CodeScreen extends StatefulHookConsumerWidget {

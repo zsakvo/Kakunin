@@ -5,7 +5,7 @@ import 'package:flutter/material.dart' hide MenuItem;
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:otp/otp.dart';
-import 'package:totp/data/entity/token.dart';
+import 'package:kakunin/data/entity/token.dart';
 
 import 'package:timezone/timezone.dart' as timezone;
 

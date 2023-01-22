@@ -8,11 +8,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-import 'package:totp/main.dart';
+import 'package:kakunin/main.dart';
 
 void main() {
-  testWidgets('App is built with a MacosWindow parent widget',
-      (WidgetTester tester) async {
+  testWidgets('App is built with a MacosWindow parent widget', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const App());
 

@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
-import 'package:totp/data/entity/config.dart';
+import 'package:kakunin/data/entity/config.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:window_manager/window_manager.dart';
 

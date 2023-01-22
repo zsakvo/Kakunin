@@ -67,14 +67,14 @@ class Token extends Equatable {
 
   /// `dart:convert`
   ///
-  /// Parses the string and returns the resulting Json object as [Totp].
+  /// Parses the string and returns the resulting Json object as [Token].
   factory Token.fromJson(String data) {
     return Token.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
   ///
-  /// Converts [Totp] to a JSON string.
+  /// Converts [Token] to a JSON string.
   String toJson() => json.encode(toMap());
 
   Token copyWith(

@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:totp/data/entity/token.dart';
+import 'package:kakunin/data/entity/token.dart';
 
 class CodeEditorNotifier extends StateNotifier<Token> {
   // We initialize the list of todos to an empty list

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:totp/data/entity/token.dart';
-import 'package:totp/screens/config/config_provider.dart';
-import 'package:totp/utils/flash.dart';
+import 'package:kakunin/data/entity/token.dart';
+import 'package:kakunin/screens/config/config_provider.dart';
+import 'package:kakunin/utils/flash.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/entity/config.dart';

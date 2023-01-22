@@ -5,13 +5,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:totp/data/entity/config.dart';
-import 'package:totp/data/entity/token.dart';
-import 'package:totp/main_provider.dart';
-import 'package:totp/screens/auth/auth_screen.dart';
-import 'package:totp/screens/code/code_screen.dart';
-import 'package:totp/screens/config/config_screen.dart';
-import 'package:totp/utils/log.dart';
+import 'package:kakunin/data/entity/config.dart';
+import 'package:kakunin/data/entity/token.dart';
+import 'package:kakunin/main_provider.dart';
+import 'package:kakunin/screens/auth/auth_screen.dart';
+import 'package:kakunin/screens/code/code_screen.dart';
+import 'package:kakunin/screens/config/config_screen.dart';
+import 'package:kakunin/utils/log.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'package:timezone/data/latest.dart' as timezone;
@@ -54,7 +54,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(builder: (lightColorScheme, darkColorScheme) {
       return MacosApp(
-        title: 'totp',
+        title: 'Kakunin',
         theme: MacosThemeData.light(),
         darkTheme: MacosThemeData.dark(),
         themeMode: ThemeMode.system,
@@ -95,7 +95,7 @@ class _MainViewState extends ConsumerState<MainView> with WindowListener {
     return PlatformMenuBar(
       menus: const [
         PlatformMenu(
-          label: 'Totp',
+          label: 'Kakunin',
           menus: [
             PlatformProvidedMenuItem(
               type: PlatformProvidedMenuItemType.about,
