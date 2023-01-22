@@ -155,7 +155,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                           ),
                         ),
                         onTap: () {
-                          launchUrl(Uri.parse("https://github.com/zsakvo/2fa"));
+                          launchUrl(Uri.parse("https://github.com/zsakvo/Kakunin"));
                         },
                       )
                     ],
