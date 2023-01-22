@@ -10,7 +10,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:kakunin/data/entity/token.dart';
 import 'package:kakunin/main_provider.dart';
 import 'package:kakunin/screens/auth/auth_provider.dart';
@@ -20,18 +19,6 @@ import 'package:kakunin/utils/log.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-part 'auth_screen.g.dart';
-
-@riverpod
-String helloWorld(HelloWorldRef ref) {
-  return '身份验证器';
-}
-
-@riverpod
-double progressValue(ProgressValueRef ref) {
-  return 1.0;
-}
-
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
   @override
@@ -39,13 +26,13 @@ class AuthScreen extends ConsumerStatefulWidget {
 }
 
 class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStateMixin, TrayListener {
-  late AnimationController controller;
-
   bool _shouldReact = false;
   Offset? _position;
   final Placement _placement = Placement.bottomLeft;
 
   Menu? _menu;
+
+  late Token _currentToken;
 
   @override
   void onTrayIconMouseDown() {
@@ -119,7 +106,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -196,6 +182,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                         final Token token = item.token;
                         return Listener(
                             onPointerDown: (event) {
+                              _currentToken = token;
                               _shouldReact =
                                   event.kind == PointerDeviceKind.mouse && event.buttons == kSecondaryMouseButton;
                             },
@@ -208,8 +195,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                                 event.position.dx,
                                 event.position.dy,
                               );
-
-                              _handleClickPopUp(token);
+                              _handleClickPopUp();
                             },
                             child: GestureDetector(
                               behavior: HitTestBehavior.translucent,
@@ -316,29 +302,32 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     );
   }
 
-  void _onClick(MenuItem item, Token token) async {
+  void _onClick(MenuItem item) async {
     final box = Hive.box<Token>("2fa");
     switch (item.label) {
       case "编辑":
         ref.read(pageProvider.notifier).update((state) => 1);
         break;
       case "删除":
-        await box.delete(token.uuid);
-        ref.read(tokenItemsProvider.notifier).remove(token);
+        Log.d(box.keys, "bks");
+        Log.d(_currentToken);
+        await box.delete(_currentToken.uuid);
+        ref.read(tokenItemsProvider.notifier).remove(_currentToken);
         break;
     }
+    ref.read(tokenItemsProvider.notifier).update();
   }
 
-  void _handleClickPopUp(Token token) {
+  void _handleClickPopUp() {
     _menu ??= Menu(
       items: [
         MenuItem(
           label: '编辑',
-          onClick: (MenuItem menuItem) => _onClick(menuItem, token),
+          onClick: (MenuItem menuItem) => _onClick(menuItem),
         ),
         MenuItem(
           label: '删除',
-          onClick: (MenuItem menuItem) => _onClick(menuItem, token),
+          onClick: (MenuItem menuItem) => _onClick(menuItem),
         ),
       ],
     );
