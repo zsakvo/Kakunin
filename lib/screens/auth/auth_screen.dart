@@ -5,7 +5,7 @@ import 'package:contextual_menu/contextual_menu.dart';
 import 'package:flutter/cupertino.dart' hide MenuItem;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide MenuItem;
-import 'package:flutter/scheduler.dart';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -18,6 +18,7 @@ import 'package:totp/screens/config/config_provider.dart';
 import 'package:totp/utils/flash.dart';
 import 'package:totp/utils/log.dart';
 import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 part 'auth_screen.g.dart';
 
@@ -55,7 +56,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
             ? MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.leftTime.toInt().toString()}秒")
             : MenuItem(label: "${e.totp.label}\t\t${e.currentCode}\t\t${e.totp.count.toString()}次"))
         .toList();
-    menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
+    menuItems.addAll([MenuItem.separator(), MenuItem(label: "界面"), MenuItem(label: "退出")]);
     menuItems.insert(0, MenuItem(label: "当前验证码", disabled: true));
     trayManager.setContextMenu(Menu(items: menuItems));
     trayManager.popUpContextMenu();
@@ -79,7 +80,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.label!.contains("\t")) {
+    String label = menuItem.label!;
+    if (label.contains("\t")) {
       final arr = menuItem.label!.split("\t\t");
       final code = arr[1];
       final label = arr[0];
@@ -96,6 +98,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
             .read(totpItemsProvider.notifier)
             .updateHotp(ref.read(totpItemsProvider).firstWhere((element) => element.currentCode == code));
       }
+    } else if (label.contains("界面")) {
+      windowManager.show();
     } else {
       exit(0);
     }

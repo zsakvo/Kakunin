@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart' hide MenuItem;
-import 'package:flutter/scheduler.dart';
+
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:otp/otp.dart';
 import 'package:totp/data/entity/totp.dart';
 
 import 'package:timezone/timezone.dart' as timezone;
-import 'package:totp/utils/log.dart';
 
 final pacificTimeZone = timezone.getLocation('America/Los_Angeles');
 final box = Hive.box<Totp>("2fa");
@@ -29,7 +28,6 @@ class TotpItem {
 }
 
 class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
-  late Timer _timer;
   TotpItemsNotifier() : super([]) {
     update();
   }
@@ -78,7 +76,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
   }
 
   chronometer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       for (var i = 0; i < state.length; i++) {
         TotpItem totpItem = state[i];
         Totp totp = totpItem.totp;
