@@ -75,7 +75,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
       FlutterClipboard.copy(code).then((value) {
         if (ref.read(configProvider).showNotification!) {
           LocalNotification(
-            title: label,
+            title: "$label - $code",
             body: "验证码复制成功",
           ).show();
         }
