@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 import 'package:totp/screens/config/config_provider.dart';
 import 'package:totp/utils/flash.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -131,7 +131,7 @@ class _ConfigScreenState extends ConsumerState<ConfigScreen> {
                           ),
                         ),
                         onTap: () async {
-                          var box = Hive.box<Totp>("2fa");
+                          var box = Hive.box<Token>("2fa");
                           await box.clear();
                           showSuccessToast(context, "数据清除完毕");
                           ref.read(totpItemsProvider.notifier).update();

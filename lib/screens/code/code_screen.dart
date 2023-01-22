@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:mime/mime.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/code/code_provider.dart';
@@ -31,8 +31,8 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
   Widget build(BuildContext context) {
     var uuid = const Uuid();
     var uuidVal = useState<String?>(null);
-    final Totp totp = ref.watch(codeEditorProvider);
-    final Totp? editItem = ref.watch(editItemProvider);
+    final Token totp = ref.watch(codeEditorProvider);
+    final Token? editItem = ref.watch(editItemProvider);
     final isDragging = ref.watch(dragProvider);
     final uriTextController = useTextEditingController();
     final issuerTextController = useTextEditingController();
@@ -149,8 +149,8 @@ class _CodeScreenState extends ConsumerState<CodeScreen> {
                     "digits": digitsTextController.text,
                     "period": periodTextController.text,
                   });
-              var box = Hive.box<Totp>("2fa");
-              Totp t = Totp(
+              var box = Hive.box<Token>("2fa");
+              Token t = Token(
                   scheme: ref.read(codeEditorProvider).scheme,
                   label: labelTextController.text,
                   issuer: issuerTextController.text,

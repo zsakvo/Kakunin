@@ -5,15 +5,15 @@ import 'package:flutter/material.dart' hide MenuItem;
 import 'package:hive/hive.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:otp/otp.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 
 import 'package:timezone/timezone.dart' as timezone;
 
 final pacificTimeZone = timezone.getLocation('America/Los_Angeles');
-final box = Hive.box<Totp>("2fa");
+final box = Hive.box<Token>("2fa");
 
 class TotpItem {
-  Totp totp;
+  Token totp;
   final AnimationController? controller;
   // final Color backgroundColor;
   double leftTime;
@@ -22,7 +22,7 @@ class TotpItem {
 
   TotpItem(
       {required this.totp, this.controller, this.leftTime = 30, this.timeValue = 100.0, this.currentCode = "------"});
-  void setTotp(Totp t) {
+  void setTotp(Token t) {
     totp = t;
   }
 }
@@ -33,7 +33,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
   }
 
   update() {
-    Box<Totp> box = Hive.box("2fa");
+    Box<Token> box = Hive.box("2fa");
     state = [
       ...box.values
           .toList()
@@ -44,7 +44,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
     ];
 
     state = state.map((totpItem) {
-      Totp totp = totpItem.totp;
+      Token totp = totpItem.totp;
       late Algorithm algorithm;
       if (totp.algorithm == "SHA1") {
         algorithm = Algorithm.SHA1;
@@ -71,7 +71,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
     }).toList();
   }
 
-  remove(Totp totp) {
+  remove(Token totp) {
     state = state.where((element) => element.totp != totp).toList();
   }
 
@@ -79,7 +79,7 @@ class TotpItemsNotifier extends StateNotifier<List<TotpItem>> {
     Timer.periodic(const Duration(seconds: 1), (timer) {
       for (var i = 0; i < state.length; i++) {
         TotpItem totpItem = state[i];
-        Totp totp = totpItem.totp;
+        Token totp = totpItem.totp;
         if (totp.scheme == "TOTP") {
           late Algorithm algorithm;
           if (totp.algorithm == "SHA1") {
@@ -136,6 +136,6 @@ final totpItemsProvider = StateNotifierProvider<TotpItemsNotifier, List<TotpItem
 
 final editorProvider = StateProvider<bool>(((ref) => false));
 
-final editItemProvider = StateProvider<Totp?>(
+final editItemProvider = StateProvider<Token?>(
   (ref) => null,
 );

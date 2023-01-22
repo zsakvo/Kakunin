@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
-part 'totp.g.dart';
+part 'token.g.dart';
 
 @HiveType(typeId: 1)
-class Totp extends Equatable {
+class Token extends Equatable {
   @HiveField(0)
   final String? secret;
   @HiveField(1)
@@ -28,7 +28,7 @@ class Totp extends Equatable {
   @HiveField(9)
   final int? count;
 
-  const Totp(
+  const Token(
       {this.secret,
       this.label,
       this.issuer,
@@ -40,7 +40,7 @@ class Totp extends Equatable {
       this.uuid,
       this.count});
 
-  factory Totp.fromMap(Map<String, dynamic> data) => Totp(
+  factory Token.fromMap(Map<String, dynamic> data) => Token(
       secret: data['secret'] as String?,
       label: data['label'] as String?,
       issuer: data['issuer'] as String?,
@@ -68,8 +68,8 @@ class Totp extends Equatable {
   /// `dart:convert`
   ///
   /// Parses the string and returns the resulting Json object as [Totp].
-  factory Totp.fromJson(String data) {
-    return Totp.fromMap(json.decode(data) as Map<String, dynamic>);
+  factory Token.fromJson(String data) {
+    return Token.fromMap(json.decode(data) as Map<String, dynamic>);
   }
 
   /// `dart:convert`
@@ -77,7 +77,7 @@ class Totp extends Equatable {
   /// Converts [Totp] to a JSON string.
   String toJson() => json.encode(toMap());
 
-  Totp copyWith(
+  Token copyWith(
       {String? secret,
       String? label,
       String? issuer,
@@ -88,7 +88,7 @@ class Totp extends Equatable {
       int? period,
       String? uuid,
       int? count}) {
-    return Totp(
+    return Token(
         secret: secret ?? this.secret,
         label: label ?? this.label,
         issuer: issuer ?? this.issuer,

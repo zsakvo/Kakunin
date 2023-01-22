@@ -11,7 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_provider.dart';
 import 'package:totp/screens/config/config_provider.dart';
@@ -125,9 +125,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final box = Hive.box<Totp>("2fa");
+    final box = Hive.box<Token>("2fa");
     final bool isEditing = ref.watch(editorProvider);
-    final Totp? editItem = ref.watch(editItemProvider);
+    final Token? editItem = ref.watch(editItemProvider);
     final List<TotpItem> totpItems = ref.watch(totpItemsProvider);
     // final menuItems = totpItems.map((e) => MenuItem(label: "${e.totp.label}\t\t\t\t${e.currentCode}")).toList();
     // menuItems.addAll([MenuItem.separator(), MenuItem(label: "退出")]);
@@ -197,7 +197,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
                   child: ListView.separated(
                       itemBuilder: (context, index) {
                         final item = totpItems[index];
-                        final Totp totp = item.totp;
+                        final Token totp = item.totp;
                         return Listener(
                             onPointerDown: (event) {
                               _shouldReact =
@@ -320,8 +320,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     );
   }
 
-  void _onClick(MenuItem item, Totp totp) async {
-    final box = Hive.box<Totp>("2fa");
+  void _onClick(MenuItem item, Token totp) async {
+    final box = Hive.box<Token>("2fa");
     switch (item.label) {
       case "编辑":
         ref.read(pageProvider.notifier).update((state) => 1);
@@ -333,7 +333,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> with TickerProviderStat
     }
   }
 
-  void _handleClickPopUp(Totp totp) {
+  void _handleClickPopUp(Token totp) {
     _menu ??= Menu(
       items: [
         MenuItem(

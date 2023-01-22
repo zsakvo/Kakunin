@@ -1,10 +1,10 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 
-class CodeEditorNotifier extends StateNotifier<Totp> {
+class CodeEditorNotifier extends StateNotifier<Token> {
   // We initialize the list of todos to an empty list
   CodeEditorNotifier()
-      : super(Totp.fromMap(const {"algorithm": "SHA1", "scheme": "TOTP", "secret": "", "digits": 6, "period": 30}));
+      : super(Token.fromMap(const {"algorithm": "SHA1", "scheme": "TOTP", "secret": "", "digits": 6, "period": 30}));
 
   void setOtpAuth(String s) {
     state = state.copyWith(otpauth: s);
@@ -41,7 +41,7 @@ class CodeEditorNotifier extends StateNotifier<Totp> {
 
 // Finally, we are using StateNotifierProvider to allow the UI to interact with
 // our TodosNotifier class.
-final codeEditorProvider = StateNotifierProvider<CodeEditorNotifier, Totp>((ref) {
+final codeEditorProvider = StateNotifierProvider<CodeEditorNotifier, Token>((ref) {
   return CodeEditorNotifier();
 });
 

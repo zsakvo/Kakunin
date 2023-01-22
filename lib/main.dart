@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:totp/data/entity/config.dart';
-import 'package:totp/data/entity/totp.dart';
+import 'package:totp/data/entity/token.dart';
 import 'package:totp/main_provider.dart';
 import 'package:totp/screens/auth/auth_screen.dart';
 import 'package:totp/screens/code/code_screen.dart';
@@ -21,8 +21,8 @@ void main() async {
   timezone.initializeTimeZones();
   await Hive.initFlutter();
   Hive.registerAdapter(ConfigAdapter());
-  Hive.registerAdapter(TotpAdapter());
-  await Hive.openBox<Totp>('2fa');
+  Hive.registerAdapter(TokenAdapter());
+  await Hive.openBox<Token>('2fa');
   final configBox = await Hive.openBox<Config>('config');
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = WindowOptions(
@@ -32,6 +32,7 @@ void main() async {
     skipTaskbar: configBox.get("global")!.skipDock!,
     titleBarStyle: TitleBarStyle.hidden,
   );
+  windowManager.setResizable(false);
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();

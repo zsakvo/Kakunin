@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'totp.dart';
+part of 'token.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TotpAdapter extends TypeAdapter<Totp> {
+class TokenAdapter extends TypeAdapter<Token> {
   @override
   final int typeId = 1;
 
   @override
-  Totp read(BinaryReader reader) {
+  Token read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Totp(
+    return Token(
       secret: fields[0] as String?,
       label: fields[1] as String?,
       issuer: fields[2] as String?,
@@ -31,7 +31,7 @@ class TotpAdapter extends TypeAdapter<Totp> {
   }
 
   @override
-  void write(BinaryWriter writer, Totp obj) {
+  void write(BinaryWriter writer, Token obj) {
     writer
       ..writeByte(10)
       ..writeByte(0)
@@ -62,7 +62,7 @@ class TotpAdapter extends TypeAdapter<Totp> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TotpAdapter &&
+      other is TokenAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
