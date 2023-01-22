@@ -4,7 +4,7 @@
 
 # Kakunin
 
-[![GitHub (pre-)release](https://img.shields.io/github/v/release/zsakvo/Kakunin.svg?include_prereleases&style=flat-square)](https://github.com/zsakvo/Kakunin/releases)  
+[![GitHub (pre-)release](https://img.shields.io/github/v/release/zsakvo/Kakunin?include_prereleases&style=flat-square)](https://github.com/zsakvo/Kakunin/releases)  
 **Kakunin** is a 2fa tool powered by `Flutter`.
 
 ---

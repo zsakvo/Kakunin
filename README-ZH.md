@@ -4,7 +4,7 @@
 
 # Kakunin
 
-[![GitHub (pre-)release](https://img.shields.io/github/v/release/zsakvo/Kakunin.svg?include_prereleases&style=flat-square)](https://github.com/zsakvo/Kakunin/releases)  
+[![GitHub (pre-)release](https://img.shields.io/github/v/release/zsakvo/Kakunin?include_prereleases&style=flat-square)](https://github.com/zsakvo/Kakunin/releases)  
 **Kakunin** 是一个基于 Flutter 构建的双因素验证工具.
 
 ---
