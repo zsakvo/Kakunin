@@ -13,7 +13,7 @@ English | [简体中文](./README-ZH.md)
 
 ---
 
-<center align="left"><img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914134-0c5a3fb5-f37a-484a-bb4f-2cd64e84de76.png"> <img width="210" alt="image" src="https://user-images.githubusercontent.com/25399519/213914162-15849193-7c68-44db-bd42-cfe75d71b2e6.png"></center>
+![Kakunin](https://user-images.githubusercontent.com/25399519/213915344-a7b1ca02-0124-440a-bcce-4a576f4ceba7.png)
 
 ## Platform Support
 
